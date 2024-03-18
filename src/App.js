@@ -3,7 +3,7 @@ import MainNavBar from "./components/MainNavBar.js";
 import HomePage from "./components/HomePage.js";
 import Login from "./components/Login.js";
 import Signup from "./components/Signup.js";
-import ChatWindow from "./components/ChatWindow.js";
+import ChatPage from "./components/ChatPage.js";
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -34,8 +34,8 @@ function App() {
             {/* Add a route for the ChatWindow component */}
             <Route
               exact
-              path="/chatwindow"
-              element={<ChatWindow loggedIn={loggedIn} />}
+              path="/chatpage"
+              element={<ChatPage loggedIn={loggedIn} />}
             />
           </Routes>
         </div>

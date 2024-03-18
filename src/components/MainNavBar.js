@@ -30,7 +30,7 @@ function MainNavBar() {
 
       {isLoggedIn ? (
         <div className="user-avatar-container" onClick={handleAvatarClick}>
-          {/* Your user avatar component */}
+          {/* User avatar component */}
           <img src="/path/to/avatar.png" alt="Avatar" />
           <div className="avatar-popup">
             <button onClick={handleLogout}>Logout</button>
