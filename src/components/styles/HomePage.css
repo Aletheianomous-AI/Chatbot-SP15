@@ -79,7 +79,7 @@
 
 /* Media queries for responsiveness */
 
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 992px) {
   .homepage {
     flex-direction: column;
     height: auto;
@@ -95,10 +95,23 @@
   .left {
     order: 1;
     margin-bottom: 2em;
+    font-size: 13px;
   }
 
   .right {
     order: 2;
+  }
+}
+
+@media only screen and (min-width: 993px) and (max-width: 1200px) {  
+  .left {
+    font-size: 13px;
+  }
+  .right{
+    font-size: 13px;
+  }
+  .contributor-card {
+    margin: 10px;
   }
 }
 
@@ -110,8 +123,5 @@
 
   .contributors {
     justify-content: flex-start;
-  }
-  .right {
-    width: 50%;
   }
 }
