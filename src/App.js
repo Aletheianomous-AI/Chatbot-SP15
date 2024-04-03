@@ -2,7 +2,6 @@ import MainNavBar from "./components/MainNavBar.js";
 import HomePage from "./components/HomePage.js";
 import Login from "./components/Login.js";
 import Signup from "./components/Signup.js";
-import ChatWindow from "./components/ChatWindow.js";
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
