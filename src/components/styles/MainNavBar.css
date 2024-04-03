@@ -34,19 +34,3 @@ nav a {
   color: #333;
   text-decoration: none;
 }
-
-/* Media queries for responsiveness */
-
-@media only screen and (max-width: 768px) {
-  .brand-name-button {
-    display: none;
-  }
-
-  nav ul {
-    justify-content: center;
-    font-size: 13px;
-  }
-  nav li {
-    margin-right: 2em;
-  }
-}
