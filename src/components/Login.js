@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import "./styles/Login.css";
-
+import { useNavigate } from "react-router-dom";
 export const Login = () => {
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const [showAuthCodeInput, setShowAuthCodeInput] = useState(false);
   const [authCode, setAuthCode] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -17,6 +18,8 @@ export const Login = () => {
     } else {
       console.log(authCode);
       // Add authentication code logic here
+      // Navigate to ChatPage.js after successful authentication
+      navigate("/chatpage");
     }
   };
 

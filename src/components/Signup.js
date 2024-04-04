@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./styles/Signup.css";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +13,7 @@ const Signup = () => {
   const [confirmationCode, setConfirmationCode] = useState("");
 
   const [redirect, setRedirect] = useState(false); // State to manage redirection
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -46,6 +48,8 @@ const Signup = () => {
     e.preventDefault();
     console.log(confirmationCode);
     // Handle authentication code logic for signup
+    // Redirect to ChatPage.js after successful authentication
+    navigate("/chatpage");
   };
 
   // Redirect to login page if redirect state is true
