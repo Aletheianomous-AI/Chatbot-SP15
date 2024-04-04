@@ -1,26 +1,22 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
-import "./styles/MainNavBar.css";
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import "./styles/MainNavBar.css";
+import UserNavBar from "./UserNavBar";
 
 // MainNavBar component
 function MainNavBar() {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const location = useLocation();
   const handleH1Click = () => {
     // navigate to the main homepage
     navigate("/");
   };
-  const handleAvatarClick = () => {
-    // handle avatar click (e.g., show popup)
-    // For simplicity, I'll just toggle the login state
-    setIsLoggedIn(!isLoggedIn);
-  };
-
-  const handleLogout = () => {
-    // Add logout logic here
-    setIsLoggedIn(false);
-  };
+  // const handleLogout = () => {
+  //   // Add logout logic here
+  //   setIsLoggedIn(false);
+  // };
 
   return (
     <nav>
@@ -29,15 +25,8 @@ function MainNavBar() {
         ALETHEIANOMOUS AI
       </h1>
 
-      {isLoggedIn ? (
-        <div className="user-avatar-container" onClick={handleAvatarClick}>
-          {/* User avatar component */}
-          <img src="/path/to/avatar.png" alt="Avatar" />
-          <div className="avatar-popup">
-            <button onClick={handleLogout}>Logout</button>
-            <Link to="/settings">Settings</Link>
-          </div>
-        </div>
+      {location.pathname === "/chatpage" ? (
+        <UserNavBar />
       ) : (
         <ul>
           <li>
