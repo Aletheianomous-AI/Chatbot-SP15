@@ -1,0 +1,105 @@
+.window-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100%;
+    position: relative;
+    box-sizing: border-box;
+    padding: 2em 10em;
+}
+.chat-container{
+  flex-grow: 1;
+  overflow-y: auto; 
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.chat-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.chat-container {
+-ms-overflow-style: none;  /* IE and Edge */
+scrollbar-width: none;  /* Firefox */
+}
+.chat-container h3{
+  color: white;
+  margin-bottom: 2em;
+}
+.chat-messages {
+  overflow-y: scroll;
+  scrollbar-color: transparent transparent; 
+}
+
+
+.chat-message {
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+
+
+.chat-bubble.ai {
+  align-self: flex-start;
+  margin-right: auto;
+  display: flex;
+  justify-content: flex-start;
+  color: white;
+}
+.sender.ai{
+  margin-right: auto;
+  display: flex;
+  justify-content: flex-start;
+  color: #B5B5B5;
+}
+
+.sender.user{
+  margin-left: auto;
+  display: flex;
+  justify-content: flex-end;
+  color: #B5B5B5;
+}
+.chat-bubble.user {
+  align-self: flex-end;
+  margin-left: auto;
+  display: flex;
+  justify-content: flex-end;
+  color: white;
+}
+
+.input-box {
+  width: 100%;
+  box-sizing: border-box;
+}
+.chat-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.chat-input input {
+  flex-grow: 1;
+  padding: 1em;
+  border: 1px solid #fff;
+  border-radius: 15px;
+  color: #ffffff;
+  background-color: transparent;
+  outline: none;
+}
+
+.send-button {
+  display: flex;
+  align-items: center;
+  padding: 0.5em;
+  margin-left: 1em;
+  border-radius: 0.5em;
+  background-color: #d9d9d9;
+  border: none;
+  cursor: pointer;
+  color: #333;
+}
+
+.send-icon {
+  font-size: 1.5em;
+  margin: 2px;
+}

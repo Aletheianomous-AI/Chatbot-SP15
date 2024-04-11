@@ -1,15 +1,23 @@
 import React, { useState } from "react";
-import "./styles/MainNavBar.css";
+import { Link, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import "./styles/MainNavBar.css";
+import UserNavBar from "./UserNavBar";
 
 // MainNavBar component
 function MainNavBar() {
   const navigate = useNavigate();
-
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const location = useLocation();
   const handleH1Click = () => {
     // navigate to the main homepage
     navigate("/");
   };
+  // const handleLogout = () => {
+  //   // Add logout logic here
+  //   setIsLoggedIn(false);
+  // };
+
   return (
     <nav>
       {/* TODO: Adding brand logo here */}
@@ -17,23 +25,23 @@ function MainNavBar() {
         ALETHEIANOMOUS AI
       </h1>
 
-      <ul className="nav-links">
-        <li>
-          <a
-            href="https://github.com/Alethianomous-AI/Chatbot-SP15"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Github Repo
-          </a>
-        </li>
-        <li>
-          <a href="/final-report">Final Report</a>
-        </li>
-        <li>
-          <a href="/video-presentation">Video Presentation</a>
-        </li>
-      </ul>
+      {location.pathname === "/chatpage" ? (
+        <UserNavBar />
+      ) : (
+        <ul>
+          <li>
+            <a href="https://github.com/Alethianomous-AI/Chatbot-SP15">
+              Github Repo
+            </a>
+          </li>
+          <li>
+            <Link to="/final-report">Final Report</Link>
+          </li>
+          <li>
+            <Link to="/video-presentation">Video Presentation</Link>
+          </li>
+        </ul>
+      )}
     </nav>
   );
 }
