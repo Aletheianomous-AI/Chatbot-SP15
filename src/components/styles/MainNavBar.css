@@ -25,9 +25,8 @@ nav ul {
   display: flex;
   align-items: center;
 }
-
 nav li {
-  margin-right: 3rem;
+  margin-right: 3em;
 }
 
 nav a {
