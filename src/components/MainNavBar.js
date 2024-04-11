@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import "./styles/MainNavBar.css";
 import UserNavBar from "./UserNavBar";
 
@@ -13,14 +13,9 @@ function MainNavBar() {
     // navigate to the main homepage
     navigate("/");
   };
-  // const handleLogout = () => {
-  //   // Add logout logic here
-  //   setIsLoggedIn(false);
-  // };
 
   return (
     <nav>
-      {/* TODO: Adding brand logo here */}
       <h1 className="brand-name-button" onClick={handleH1Click}>
         ALETHEIANOMOUS AI
       </h1>
@@ -30,15 +25,18 @@ function MainNavBar() {
       ) : (
         <ul>
           <li>
-            <a href="https://github.com/Alethianomous-AI/Chatbot-SP15">
-              Github Repo
-            </a>
+            <Link to="/login" className="">
+              Login
+            </Link>
           </li>
           <li>
-            <Link to="/final-report">Final Report</Link>
+            <Link to="/singup" className="">
+              Signup
+            </Link>
           </li>
           <li>
-            <Link to="/video-presentation">Video Presentation</Link>
+            {/* TODO: Insert the static website for final report here */}
+            <a href="">Our Team</a>
           </li>
         </ul>
       )}
