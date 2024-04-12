@@ -6,6 +6,29 @@
   position: relative;
   box-sizing: border-box;
 }
+.settings-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #a7a7a7;
+  padding: 0.5em;
+  position: relative;
+}
+.settings-heading {
+  font-weight: 600;
+  font-size: 30px;
+  color: white;
+  margin: 0;
+}
+.close-btn {
+  background-color: transparent;
+  color: white;
+  font-size: 30px;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  right: 5em;
+}
 
 .left-column {
   width: 15%;

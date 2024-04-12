@@ -10,7 +10,6 @@ const PrivacyTab = () => {
   };
   return (
     <div className="privacy-container">
-      <div className="settings-bar">SETTINGS</div>
       <h2 className="right-heading">PRIVACY</h2>
       <div className="data-collection">
         <h3>DATA COLLECTION</h3>

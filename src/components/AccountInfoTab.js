@@ -16,8 +16,7 @@ const AccountInfoTab = () => {
   };
   return (
     <div className="settings-container">
-      <div className="settings-bar">SETTINGS</div>
-      <h2 className="right-heading">Account & Security</h2>
+      <h2 className="right-heading">ACCOUNT & SECURITY</h2>
       <div className="account-info">
         <h3>ACCOUNT INFORMATION</h3>
         <div className="info-box">
