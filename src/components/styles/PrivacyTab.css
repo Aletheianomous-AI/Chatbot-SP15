@@ -1,0 +1,34 @@
+.data-collection {
+  margin: 5em;
+}
+.chat-history {
+  margin: 5em;
+}
+.sub-note {
+  color: rgb(125, 125, 125);
+}
+.check-box {
+  display: flex;
+  flex-direction: row;
+}
+.checkmark {
+  margin-left: 4em;
+}
+.delete-container {
+  display: flex;
+  flex-direction: row;
+}
+.delete-dropdown {
+  margin-left: 4em;
+  padding: 10px 20px;
+  font-size: 14px;
+}
+.delete-btn {
+  color: red;
+  border: 2px solid red;
+  padding: 1em;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  margin-top: 2em;
+}

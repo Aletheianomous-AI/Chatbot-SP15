@@ -5,6 +5,7 @@ import HomePage from "./components/HomePage.js";
 import Login from "./components/Login.js";
 import Signup from "./components/Signup.js";
 import ChatPage from "./components/ChatPage.js";
+import Settings from "./components/Settings.js";
 import "./App.css";
 import { Routes, Route, useLocation } from "react-router-dom";
 
@@ -26,7 +27,12 @@ function App() {
   return (
     <div className="App">
       {/* <MainNavBar /> */}
-      {location.pathname === "/chatpage" ? <UserNavBar /> : <MainNavBar />}
+      {location.pathname === "/chatpage" ||
+      location.pathname === "/settings" ? (
+        <UserNavBar />
+      ) : (
+        <MainNavBar />
+      )}
       <Routes>
         <Route exact path="/" element={<HomePage />} />
         <Route exact path="/login" element={<Login />} />
@@ -37,6 +43,7 @@ function App() {
           path="/chatpage"
           element={<ChatPage loggedIn={loggedIn} />}
         />
+        <Route exact path="/settings" element={<Settings />} />
       </Routes>
     </div>
   );

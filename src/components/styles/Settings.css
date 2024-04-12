@@ -1,0 +1,67 @@
+.main-container {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.left-column {
+  width: 15%;
+  box-sizing: border-box;
+  background-color: #3c4352;
+  display: flex;
+  flex-direction: column;
+  padding: 5em 0;
+  justify-content: flex-start;
+}
+.acc-info-btn {
+  margin-bottom: 4em;
+  font-size: large;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  color: white;
+}
+.privacy-btn {
+  font-size: large;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  color: white;
+}
+
+.right-column {
+  box-sizing: border-box;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.acc-info-btn.active,
+.privacy-btn.active {
+  background-color: #48658071;
+  padding: 10px;
+}
+
+/* Style for the inactive button */
+.acc-info-btn:not(.active),
+.privacy-btn:not(.active) {
+  background-color: transparent; /* Set background color to transparent for inactive button */
+}
+
+/* Add hover effect */
+.acc-info-btn:hover,
+.privacy-btn:hover {
+  background-color: #48658071;
+  padding: 10px;
+}
+
+@media only screen and (max-width: 992px) {
+  .acc-info-btn {
+    font-size: medium;
+  }
+  .privacy-btn {
+    font-size: medium;
+  }
+}
