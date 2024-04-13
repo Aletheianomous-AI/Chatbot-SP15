@@ -6,8 +6,8 @@ import "./styles/ChatPage.css";
 //Full chatpage with chatwindow and chathistory
 
 const ChatPage = () => {
-  const backendURL = "https://172.208.66.211:5000";
-  const userId = "sample_user_id"; // Replace with the actual user ID
+  const backendURL = "http://172.208.66.211:5000";
+  const userId = "1"; // Replace with the actual user ID
   return (
     <div className="container">
       <div className="recent-column">

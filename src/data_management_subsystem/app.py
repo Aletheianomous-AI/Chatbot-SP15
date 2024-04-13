@@ -1,15 +1,18 @@
 from flask import Flask, render_template, request, redirect, session, json
+from flask_cors import CORS, cross_origin
 from .chat_data_module import ChatData as cd
 from .NonExistentUserException import NonExistentUserException
 from datetime import datetime as dt
 
 
 app = Flask(__name__)
-
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.route('/post_chat/<user_id>', methods=['POST'])
+@cross_origin()
 def post_chat(user_id):
-    if request.method == "POST":
+    if (request.method == "POST"):
         try:
             print("Post chat request detected.")
             json_data = request.get_json(silent=True)
@@ -28,6 +31,7 @@ def post_chat(user_id):
         return json.dumps({'success': False}), 400
 
 @app.route('/generate_response/<user_id>', methods=['POST'])
+@cross_origin()
 def generate_response(user_id):
     #return json.dumps({'success': False, 'Exception data': "generate_response/<user_id> POST request not implemented."}), 501
     
@@ -57,6 +61,7 @@ def generate_response(user_id):
     
 
 @app.route('/get_chat/<user_id>', methods=['GET'])
+@cross_origin()
 def get_chat(user_id):
     
     if request.method == "GET":
