@@ -3,9 +3,10 @@ import "./styles/ChatHistory.css";
 
 function ChatHistory({ backendURL, userId }) {
   const [recentChats, setRecentChats] = useState([]);
+  //Fetch chat history on component mount
   useEffect(() => {
     fetchChatHistory();
-  }, []); // Fetch chat history on component mount
+  }, []);
 
   const fetchChatHistory = async () => {
     try {
@@ -27,7 +28,15 @@ function ChatHistory({ backendURL, userId }) {
       <ul className="recent-chats-list">
         {recentChats.map((chat) => (
           <li key={chat.id} className="recent-chat-item">
-            <div className="chat-name">{chat.name}</div>
+            <div className="chat-info">
+              <span
+                className={chat.is_from_bot ? "bot-message" : "user-message"}
+              >
+                {chat.content}
+              </span>
+              {"\n"}
+              <span className="time">{chat.time_in_edt}</span>
+            </div>
           </li>
         ))}
       </ul>
