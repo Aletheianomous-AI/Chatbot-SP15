@@ -1,10 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./styles/ChatWindow.css";
 
 //Chat window only
-const ChatWindow = ({ backendURL, userId }) => {
+const ChatWindow = ({ backendURL, userId, currentChat }) => {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
+  const [chatTitle, setChatTitle] = useState("");
+
+  useEffect(() => {
+    if (currentChat) {
+      // Update chat title when current chat changes
+      setChatTitle(currentChat.title);
+      //Update current message in current chat
+      setMessages(messages);
+    }
+  }, [currentChat]);
 
   const sendMessageToBackend = async (message) => {
     try {
@@ -49,7 +59,7 @@ const ChatWindow = ({ backendURL, userId }) => {
   return (
     <div className="window-container">
       <div className="chat-container">
-        <h3>Chat Header</h3>
+        <h3>{currentChat ? currentChat.title : ""}</h3>
         <div className="chat-messages">
           {messages.map((message, index) => (
             <div key={index} className="chat-message">

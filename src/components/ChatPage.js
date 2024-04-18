@@ -7,7 +7,12 @@ import "./styles/ChatPage.css";
 const ChatPage = () => {
   const backendURL = "http://172.208.66.211:5000";
   const userId = "1"; // Replace with the actual user ID
+  const [currentChat, setCurrentChat] = useState(null); // State to track current chat
+  const handleChatSelect = (chat) => {
+    setCurrentChat(chat); // Update current chat when a chat is selected
+  };
 
+  //Make the history sidebar resizeable
   const [width, setWidth] = useState(300);
   const [mouseDown, setMouseDown] = useState(false);
 
@@ -25,6 +30,7 @@ const ChatPage = () => {
       setWidth(event.pageX);
     }
   };
+  //----------------------
 
   return (
     <div
@@ -37,11 +43,19 @@ const ChatPage = () => {
         style={{ width: width }}
         onMouseDown={handleMouseDown}
       >
-        <ChatHistory backendURL={backendURL} userId={userId} />
+        <ChatHistory
+          backendURL={backendURL}
+          userId={userId}
+          onSelectChat={handleChatSelect}
+        />
       </div>
 
       <div className="main-chat-window">
-        <ChatWindow backendURL={backendURL} userId={userId} />
+        <ChatWindow
+          backendURL={backendURL}
+          userId={userId}
+          currentChat={currentChat}
+        />
       </div>
     </div>
   );
