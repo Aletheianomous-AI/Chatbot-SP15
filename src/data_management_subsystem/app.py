@@ -4,6 +4,10 @@ from .chat_data_module import ChatData as cd
 from .NonExistentUserException import NonExistentUserException
 from datetime import datetime as dt
 
+import os
+import traceback
+import requests
+
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -36,6 +40,7 @@ def generate_response(user_id):
     #return json.dumps({'success': False, 'Exception data': "generate_response/<user_id> POST request not implemented."}), 501
     
     try:
+        backend_ip = os.environ.get("BACKEND_IP")
         user_id = int(user_id)
         chat_handler = cd(user_id)
         # This code will be executed from the front-end server to communicate
@@ -43,7 +48,7 @@ def generate_response(user_id):
         
         json_data = request.get_json(silent=True)
         chat_input = json_data['chat_data']
-        backend_json_data = request.post('backend_ip/generate_response', {'input': chat_input})
+        backend_json_data = request.post((backend_ip + '/generate_response'), {'input': chat_input})
         robot_chat_id = chat_handler.log_chat(backend_json_data['output'], dt.now(), True)
         if 'citations' in backend_json_data.keys():
             chat_handler.upload_citations(robot_chat_id, backend_json_data['citations'])
@@ -57,8 +62,21 @@ def generate_response(user_id):
     except Exception as e:
         return json.dumps({'success': False, 'Exception data': str(e)}), 500
 
-    
-    
+@app.route('/generate_conv_title/', methods['POST'])
+@cross_origin()
+def generate_conv():
+    if (request.method=="POST"):
+        try:
+            json_data = request.get_json(silent=False)
+            user_input = json_data['input']
+            backend_ip = os.environ.get("BACKEND_IP")
+            backend_json_data = request.post(backend_ip + '/generate_conv_title/', {'input': user_input})
+            return json.dumps('success': True, 'conversation_title': backend_json_data['conversation_title']), 201
+        except Exception as e:
+            traceback.print_exc()
+            return json.dumps({'success': False, 'exception_details': str(e)}), 500
+    else:
+        return json.dumps({'success': False}), 400
 
 @app.route('/get_chat/<user_id>', methods=['GET'])
 @cross_origin()
