@@ -71,7 +71,7 @@ def generate_conv():
             user_input = json_data['input']
             backend_ip = os.environ.get("BACKEND_IP")
             backend_json_data = request.post(backend_ip + '/generate_conv_title/', {'input': user_input})
-            return json.dumps('success': True, 'conversation_title': backend_json_data['conversation_title']), 201
+            return json.dumps({'success': True, 'conversation_title': backend_json_data['conversation_title']}), 201
         except Exception as e:
             traceback.print_exc()
             return json.dumps({'success': False, 'exception_details': str(e)}), 500
