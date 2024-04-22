@@ -62,7 +62,7 @@ def generate_response(user_id):
     except Exception as e:
         return json.dumps({'success': False, 'Exception data': str(e)}), 500
 
-@app.route('/generate_conv_title/', methods['POST'])
+@app.route('/generate_conv_title/', methods=['POST'])
 @cross_origin()
 def generate_conv():
     if (request.method=="POST"):
