@@ -30,7 +30,7 @@ function MainNavBar() {
             </Link>
           </li>
           <li>
-            <Link to="/singup" className="">
+            <Link to="/signup" className="">
               Signup
             </Link>
           </li>
