@@ -21,31 +21,41 @@ class ChatData():
         """
 
         citation_list_append_qry = """
-        BEGIN TRANSACTION
             DECLARE @CitationID int;
-            IF (SELECT COUNT(1) FROM dbo.Citation WHERE link = '""" + citation+ """')
-                SELECT @CitationID = CitationID
-                FROM dbo.Citation WHERE link = '""" + citation+ """');
+            IF EXISTS (SELECT * FROM dbo.Citation WHERE Link = ?)
+                BEGIN
+                    SELECT @CitationID = Citation_ID
+                    FROM dbo.Citation WHERE Link = ?;
+                END
             ELSE
-                SELECT @CitationID = (MAX(CitationID) + 1)
-                FROM dbo.Citation;
-                INSERT INTO dbo.Citation (CitationID, link)
-                VALUES (@CitationID, """ + citation + """);
-            
-            DECLARE @SurrogateKey;
-            SELECT @SurrogateKey = (MAX(SurrogateKey) + 1)
-            FROM dbo.Citation_Chat_History;
+                BEGIN
+                    SELECT @CitationID = (MAX(Citation_ID) + 1)
+                    FROM dbo.Citation;
+                        IF (@CitationID IS NULL)
+                            BEGIN
+                                SET @CitationID = 1;
+                            END
+                    INSERT INTO dbo.Citation (Citation_ID, Link)
+                    VALUES (@CitationID, ?)
+                END
 
-            INSERT INTO dbo.Citation_Chat_History (SurrogateKey, CitationID, Chat_ID)
-            VALUES (@SurrogateKey, @CitationID, '""" + str(response_chat_id) + """')
-                        
-        END TRANSACTION
+            DECLARE @SurrogateKey int;
+            SELECT @SurrogateKey = @SurrogateKey;
+            FROM dbo.Citation_Chat_History
+
+            IF (@SurrogateKey IS NULL)
+                BEGIN
+                    SET @SurrogateKey = 1;
+                END
+
+            INSERT INTO dbo.Citation_Chat_History (Surrogate_Key, Chat_ID, Citation_ID)
+            VALUES (@SurrogateKey, ?, @CitationID);
         """
 
         self.conn.autocommit= False
         for citation in citations_list:
             cursor = self.conn.cursor()
-            cursor.execute(citation_list_append_qry)
+            cursor.execute(citation_list_append_qry, Link, Link, Link, response_chat_id)
             cursor.commit()
             del cursor
         self.conn.autocommit= True
@@ -97,11 +107,11 @@ class ChatData():
         query = """
             SELECT *
             FROM dbo.Chat_History
-            WHERE Chat_ID = """ + str(chat_id) + """
+            WHERE Chat_ID = ? 
             ORDER BY Chat_ID DESC
         """
         cursor = self.conn.cursor()
-        cursor.execute(query)
+        cursor.execute(query, chat_id)
         row = cursor.fetchone()
         del cursor
         if row is not None:
@@ -142,13 +152,13 @@ class ChatData():
     		SELECT @ChatID = (MAX(Chat_ID) + 1)
             FROM dbo.Chat_History;
             INSERT INTO dbo.Chat_History (Chat_ID, Chat_Content, Belongs_To_Bot, Time_Of_Output)
-            VALUES (@ChatID, '""" + chat_data + """', """ + str(is_from_bot_int) + """, '""" + timestamp+ """');
-            INSERT INTO dbo.Chat_User (Chat_ID, UserID) VALUES (@ChatID, """ + str(self.userId) + """);
+            VALUES (@ChatID, ?, ?, ?);
+            INSERT INTO dbo.Chat_User (Chat_ID, UserID) VALUES (@ChatID, ?);
         """
         )
         self.conn.autocommit = False
         cursor = self.conn.cursor()
-        cursor.execute(upload_query)
+        cursor.execute(upload_query, chat_data, str(is_from_bot_int), timestamp, self.userId)
         self.conn.commit()
         self.conn.autocommit = True
         del cursor
@@ -164,22 +174,27 @@ class ChatData():
         return chat_id
     
     def return_chat_history(self):
-
-        fetching_query = """
+        conversations_query = """
             SELECT *
-            FROM dbo.Chat_History AS ch
-            INNER JOIN dbo.Chat_Conversation AS cc
-                ON (cc.Chat_ID = ch.Chat_ID)
-            WHERE cc.UserId = """ + str(self.userId) + """
-            ORDER BY cc.Chat_ID DESC
+            FROM dbo.Chat_History
+            WHERE UserID = ?
+            ORDER BY ConversationID;
         """
         
 
         cursor = self.conn.cursor()
-        cursor.execute(fetching_query)
-        row = cursor.fetchone()
-        chat_hist = [row]
-        while row is not None:
-            row = cursor.fetchone()
-            chat_hist.append(row)
+        cursor.execute(conversations_query, self.userId)
+        conversations_list = cursor.fetchall()
+        print(conversations_list)
+
+        fetching_query = """
+            SELECT * FROM dbo.Chat_History AS ch
+            INNER JOIN dbo.Chat_Conversation AS cc
+                ON (cc.Chat_ID = ch.Chat_ID)
+            WHERE cc.Conversation_ID = 1
+            ORDER BY cc.Chat_ID DESC;
+        """
+
+        cursor.execute(fetching_query, self.userId)
+        chat_hist = cursor.fetchall()
         return chat_hist
