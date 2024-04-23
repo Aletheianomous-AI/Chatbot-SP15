@@ -1,8 +1,8 @@
 from pytz import timezone
-from .ConnectionFailureException import ConnectionFailureException
-from .RecordNotFoundException import RecordNotFoundException
-from .NonExistentUserException import NonExistentUserException
-from .user_account_management import UserAccountManagement
+from ConnectionFailureException import ConnectionFailureException
+from RecordNotFoundException import RecordNotFoundException
+from NonExistentUserException import NonExistentUserException
+from user_account_management import UserAccountManagement
 
 import os
 import time
@@ -92,7 +92,6 @@ class ChatData():
         self.passwrd = os.environ.get('ALETHEIANOMOUS_AI_PASSWRD')
         self.conn = None
         self.connect()
-    
         self.userId = userId
         if UserAccountManagement.user_exists(self.conn, userId):
             self.userId = userId
@@ -104,13 +103,14 @@ class ChatData():
         PARAMETER
         chat_id - The chat ID to return.
         """
+        cursor = self.conn.cursor()
+
         query = """
             SELECT *
             FROM dbo.Chat_History
             WHERE Chat_ID = ? 
             ORDER BY Chat_ID DESC
         """
-        cursor = self.conn.cursor()
         cursor.execute(query, chat_id)
         row = cursor.fetchone()
         del cursor
@@ -176,25 +176,28 @@ class ChatData():
     def return_chat_history(self):
         conversations_query = """
             SELECT *
-            FROM dbo.Chat_History
-            WHERE UserID = ?
+            FROM dbo.Conversation
             ORDER BY ConversationID;
         """
-        
+
 
         cursor = self.conn.cursor()
-        cursor.execute(conversations_query, self.userId)
+        cursor.execute(conversations_query)
         conversations_list = cursor.fetchall()
         print(conversations_list)
 
         fetching_query = """
-            SELECT * FROM dbo.Chat_History AS ch
-            INNER JOIN dbo.Chat_Conversation AS cc
-                ON (cc.Chat_ID = ch.Chat_ID)
-            WHERE cc.Conversation_ID = ?
-            ORDER BY cc.Chat_ID DESC;
+        SELECT ch.chat_ID, ch.Chat_Content, ch.Time_Of_Output, conv.ConversationName, cc.Conversation_ID, conv.UserID
+        FROM
+            dbo.Chat_History as ch
+        JOIN
+            dbo.Chat_Conversation cc ON ch.Chat_ID = cc.Chat_ID
+        JOIN
+            dbo.Conversation conv ON cc.Conversation_ID = conv.ConversationID
+        WHERE
+            conv.UserID = ?
+        ORDER BY ch.chat_ID
         """
-
         cursor.execute(fetching_query, self.userId)
         chat_hist = cursor.fetchall()
         return chat_hist
