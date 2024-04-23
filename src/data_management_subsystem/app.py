@@ -78,6 +78,54 @@ def generate_conv():
     else:
         return json.dumps({'success': False}), 400
 
+
+@app.route('/create_new_conversation/<user_id>', methods=['POST'])
+@cross_origin()
+def create_new_conversation(user_id):
+    """This function creates a new conversation on the SQL database
+        for the user.
+
+        PARAMETER
+        user_id - The ID of the user to create a new conversation.
+
+        JSON FILE FORMAT
+        {'conversation_title': <conversation_title>}
+    """
+    try:
+        chat_data = cd(user_id)
+        json_data = request.get_json(silent=True)
+        new_conv_id = chat_data.create_new_conversation(json_data['conversation_title'])
+        return json.dumps({'success': True, 'new_conversation_id': new_conv_id}), 201
+    except Exception as e:
+        return json.dumps({'success': False, 'exception_details': str(e)}), 500
+
+@app.route('/update_conversation_title/<user_id>', methods=['POST'])
+@cross_origin()
+def update_conversation_title(user_id):
+    """This function renames the title of the conversation on the SQL
+        database. The JSON file must be passed into the POST request.
+
+        FUNCTION PARAMETER
+        user_id - The ID of the user that initiated the conversation.
+
+        JSON FILE FORMAT
+        {'conversation_id': <conversation_id>, 'new_title': <new_title>}
+
+        JSON PARAMETERS
+        <conversation_id> - The id of the conversation to rename its title.
+        <new_title> - The new title of the conversation to rename.
+    """
+    try:
+        chat_data = cd(user_id)
+        json_data = request.get_json(silent=True)
+        conversation_id = json_data['conversation_id']
+        new_title = json_data['new_title']
+        chat_data.rename_conversation_title(conversation_id, new_title)
+        return json.dumps({'success': True}), 201
+    except Exception as e:
+        traceback.print_exc()
+        return json.dumps({'succes': False, 'exception_details': str(e)}), 500
+
 @app.route('/get_chat/<user_id>', methods=['GET'])
 @cross_origin()
 def get_chat(user_id):
@@ -87,22 +135,9 @@ def get_chat(user_id):
         chat_logs = chat_data.return_chat_history()
         chat_logs.remove(None)
         chat_data.close_conn()
-        i = 0
-        for row in chat_logs:
-            chat_logs[i] = list(chat_logs[i])
-            chat_logs[i][3] = chat_logs[i][3].strftime("%m/%d/%Y, %I:%M:%S %p")
-            i+=1
-
-        content_json = []
-        for row in chat_logs:
-            row_json = {'time_in_edt': row[3], 'content': row[1], 'is_from_bot': row[2]}
-            if len(row) == 5:
-                row_json['citations'] = row[4]
-            content_json.append(row_json)
-
         return json.dumps({'success': True, 'chat_history': content_json, 'user_id': int(user_id)}), 201
     else:
-        return json.dumps({'success': False, 'content': "You didnt ask to get it!"}), 400
+        return json.dumps({'success': False, 'content': "Only 'GET' request method are allowed for /get_chat/" + str(user_id) + "."}), 400
 
 if __name__=="__main__":
     app.run()
