@@ -168,10 +168,10 @@ class ChatData():
         fetching_query = """
             SELECT *
             FROM dbo.Chat_History AS ch
-            INNER JOIN dbo.Chat_User AS cu
-                ON (cu.Chat_ID = ch.Chat_ID)
-            WHERE cu.UserId = """ + str(self.userId) + """
-            ORDER BY cu.Chat_ID DESC
+            INNER JOIN dbo.Chat_Conversation AS cc
+                ON (cc.Chat_ID = ch.Chat_ID)
+            WHERE cc.UserId = """ + str(self.userId) + """
+            ORDER BY cc.Chat_ID DESC
         """
         
 
