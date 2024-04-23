@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
 import "./styles/ChatHistory.css";
 
-//Mock data test, will remove it later
-// const mockRecentChats = [
-//   { id: 1, title: "Chat 1" },
-//   { id: 2, title: "Chat 2" },
-//   { id: 3, title: "Chat 3" },
-// ];
-
-function ChatHistory({ backendURL, userId, onSelectChat }) {
+function ChatHistory({ backendURL, userId, onSelectChat, onNewChat }) {
   const [recentChats, setRecentChats] = useState([]);
-  //Fetch chat history on component mount
+
+  //FOR TESTING PURPOSE, WILL DELETE LATER
+  // const [recentChats, setRecentChats] = useState([
+  //   { id: 1, title: "Chat 1" },
+  //   { id: 2, title: "Chat 2" },
+  //   { id: 3, title: "Chat 3" },
+  // ]);
+
   useEffect(() => {
-    fetchChatHistory();
+    fetchChatHistory(); //Fetch chat history on component mount
+    fetchChatTitles(); // Fetch chat titles when component mounts
   }, []);
 
   const fetchChatHistory = async () => {
@@ -28,31 +29,27 @@ function ChatHistory({ backendURL, userId, onSelectChat }) {
     }
   };
 
+  const fetchChatTitles = async () => {
+    try {
+      const response = await fetch(`${backendURL}/generate_conv_title`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch chat titles");
+      }
+      const data = await response.json();
+      setRecentChats(data.conversation_title);
+    } catch (error) {
+      console.error("Error fetching chat titles:", error.message);
+    }
+  };
+
   return (
     <div className="recent-container">
-      <button className="new-chat-button">New Chat</button>
-      <h3 className="recent-header">Recent</h3>
+      <button className="new-chat-button" onClick={onNewChat}>
+        New Chat
+      </button>
+      <h3 className="recent-header">Recent Chats</h3>
       <ul className="recent-chats-list">
         {recentChats.map((chat) => (
-          <li
-            key={chat.id}
-            className="recent-chat-item"
-            onClick={() => onSelectChat(chat)}
-          >
-            <div className="chat-info">
-              <span
-                className={chat.is_from_bot ? "bot-message" : "user-message"}
-              >
-                {chat.content}
-              </span>
-              {"\n"}
-              <span className="time">{chat.time_in_edt}</span>
-            </div>
-          </li>
-        ))}
-
-        {/* This is used for mock data test, will remove it later  */}
-        {/* {mockRecentChats.map((chat) => (
           <li
             key={chat.id}
             className="recent-chat-item"
@@ -62,7 +59,7 @@ function ChatHistory({ backendURL, userId, onSelectChat }) {
               <span>{chat.title}</span>
             </div>
           </li>
-        ))} */}
+        ))}
       </ul>
     </div>
   );

@@ -4,6 +4,13 @@ import "./styles/ChatWindow.css";
 //Chat window only
 const ChatWindow = ({ backendURL, userId, currentChat }) => {
   const [messages, setMessages] = useState([]);
+
+  //FOR TESTING PURPOSE, WILL DELETE LATER
+  // const [messages, setMessages] = useState([
+  //   { sender: "User", text: "Hello!", ai: false },
+  //   { sender: "AI", text: "Hi there! How can I help you?", ai: true },
+  // ]);
+
   const [inputValue, setInputValue] = useState("");
   const [chatTitle, setChatTitle] = useState("");
 
@@ -40,11 +47,42 @@ const ChatWindow = ({ backendURL, userId, currentChat }) => {
     }
   };
 
+  const getResponseFromAI = async (message) => {
+    // Send user message to backend
+    await sendMessageToBackend(message);
+
+    // Receive AI response from backend
+    try {
+      const response = await fetch(
+        `${backendURL}/generate_response/${userId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ chat_data: message }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to receive AI response");
+      }
+
+      const responseData = await response.json();
+      const aiResponse = responseData.ai_output;
+
+      // Update chat window with AI response
+      setMessages([...messages, { sender: "AI", text: aiResponse.content }]);
+    } catch (error) {
+      console.error("Error receiving AI response:", error.message);
+    }
+  };
+
   const handleSend = async () => {
     if (inputValue.trim()) {
       const userMessage = { sender: "User", text: inputValue };
       setMessages([...messages, userMessage]);
-      await sendMessageToBackend(inputValue);
+      await getResponseFromAI(inputValue);
       setInputValue("");
     }
   };
@@ -59,7 +97,7 @@ const ChatWindow = ({ backendURL, userId, currentChat }) => {
   return (
     <div className="window-container">
       <div className="chat-container">
-        <h3>{currentChat ? currentChat.title : ""}</h3>
+        <h3>{chatTitle}</h3>
         <div className="chat-messages">
           {messages.map((message, index) => (
             <div key={index} className="chat-message">
