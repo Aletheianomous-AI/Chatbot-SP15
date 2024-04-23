@@ -191,7 +191,7 @@ class ChatData():
             SELECT * FROM dbo.Chat_History AS ch
             INNER JOIN dbo.Chat_Conversation AS cc
                 ON (cc.Chat_ID = ch.Chat_ID)
-            WHERE cc.Conversation_ID = 1
+            WHERE cc.Conversation_ID = ?
             ORDER BY cc.Chat_ID DESC;
         """
 
