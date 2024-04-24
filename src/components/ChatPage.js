@@ -16,7 +16,10 @@ const ChatPage = () => {
 
   const handleNewChat = async (user_input) => {
     try {
-      // Call the /generate_conv_title/ endpoint to generate conversation title
+
+      console.log("Generating new chat title.");
+      console.log(user_input); // User input does not return a string of chat message.
+// Call the /generate_conv_title/ endpoint to generate conversation title
       const response = await fetch(`${backendURL}/generate_conv_title/${userId}`, {
         method: "POST",
         headers: {
@@ -29,17 +32,19 @@ const ChatPage = () => {
         throw new Error("Failed to generate conversation title");
       }
 
+      console.log("Got conversation title");
       const data = await response.json();
       const conversationTitle = data.conversation_title;
-
+      console.log("Got conversation title", data.conversation_title);
       // Generate a new chat object with the received conversation title
       const newChat = { id: recentChats.length + 1, title: conversationTitle };
-
+      console.log("Created new chat object.");
       // Add the new chat to the list of recent chats
       setRecentChats([...recentChats, newChat]);
-
+      console.log("Appended recent chats");
       // Set the new chat as the current chat
       setCurrentChat(newChat);
+      console.log("Set new chat as current object");
 
       console.log("Opening a new chat window with title:", conversationTitle); // for testing purpose
     } catch (error) {
