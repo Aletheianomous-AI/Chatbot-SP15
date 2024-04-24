@@ -324,7 +324,15 @@ class ChatData():
         chat_hist = cursor.fetchall()
         for row in chat_hist:
             conversation_id = row[5] # Get id to index conversations_ls_json object.
-            message_dict = {'time_in_edt': row[3].strftime("%m/%d/%Y, %I:%M:%S %p"), 'content': row[1], 'is_from_bot': row[2]}
+            is_from_bot = bool(row[2])
+            if is_from_bot:
+                sender = "AI"
+            else:
+                sender = "User"
+
+
+            #message_dict = {'time_in_edt': row[3].strftime("%m/%d/%Y, %I:%M:%S %p"), 'content': row[1], 'is_from_bot': row[2]} # OLD MESSAGE DICT
+            message_dict = {'time_in_edt': row[3].strftime("%m/%d/%Y, %I:%M:%S %p"), 'sender': sender, 'text': row[1], 'ai': is_from_bot} 
             citations = self.get_citations_by_chat_id(row[0]) 
             if citations is not None:
                 message_dict['citations'] = citations

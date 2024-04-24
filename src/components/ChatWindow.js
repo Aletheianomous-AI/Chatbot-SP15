@@ -4,7 +4,6 @@ import "./styles/ChatWindow.css";
 //Chat window only
 const ChatWindow = ({ backendURL, userId, currentChat }) => {
   const [messages, setMessages] = useState([]);
-
   //FOR TESTING PURPOSE, WILL DELETE LATER
   // const [messages, setMessages] = useState([
   //   { sender: "User", text: "Hello!", ai: false },
@@ -85,6 +84,7 @@ const ChatWindow = ({ backendURL, userId, currentChat }) => {
       messages_copy = [...messages, { sender: "AI", text: aiResponse.content}];
       console.log(messages_copy);
       setMessages([...messages, userMessage, { sender: "AI", text: aiResponse.content}]);
+      currentChat.messages = [...currentChat.messages, userMessage, {sender: "AI", text: aiResponse.content}];	    
       console.log("Messages after appending AI response: ", messages);
     } catch (error) {
       console.error("Error receiving AI response:", error.message);

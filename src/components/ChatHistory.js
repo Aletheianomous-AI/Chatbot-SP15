@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import "./styles/ChatHistory.css";
 
 function ChatHistory({ backendURL, userId, onSelectChat, onNewChat }) {
-  //const [recentChats, setRecentChats] = useState([]);
+  const [recentChats, setRecentChats] = useState([]);
 
   //FOR TESTING PURPOSE, WILL DELETE LATER
-   const [recentChats, setRecentChats] = useState([
-     { id: 1, title: "ID 1", messages: [{sender: "User", text: "Who is Glamrock Freddy?", ai: false}, {sender: "AI", text: "Glamrock Freddy is an animatronic From Five Nights at Freddy's, Security Breach.", ai: true}] },
-     { id: 9, title: "ID 9" },
-     { id: 10, title: "ID 10" },
-   ]);
+  // const [recentChats, setRecentChats] = useState([
+  //   { id: 1, title: "ID 1", messages: [{sender: "User", text: "Who is Glamrock Freddy?", ai: false}, {sender: "AI", text: "Glamrock Freddy is an animatronic From Five Nights at Freddy's, Security Breach.", ai: true}] },
+  //   { id: 9, title: "ID 9" },
+  //   { id: 10, title: "ID 10" },
+  // ]);
 
   useEffect(() => {
     fetchChatHistory(); //Fetch chat history on component mount
@@ -24,7 +24,7 @@ function ChatHistory({ backendURL, userId, onSelectChat, onNewChat }) {
       }
       const data = await response.json();
       console.log(data.chat_history);
-      //setRecentChats(data.chat_history);
+      setRecentChats(data.chat_history);
       console.log("New state of recentChats: ", recentChats);
     } catch (error) {
       console.error("Error fetching chat history:", error.message);
@@ -41,7 +41,7 @@ function ChatHistory({ backendURL, userId, onSelectChat, onNewChat }) {
       }
       const data = await response.json();
       console.log(data.conversation_title);
-      //setRecentChats(data.conversation_title);
+      setRecentChats(data.conversation_title);
     } catch (error) {
       console.error("Error fetching chat titles:", error.message);
     }
