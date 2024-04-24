@@ -58,7 +58,8 @@ def generate_response(user_id):
         robot_chat_id = chat_handler.log_chat(backend_json_data['output'], dt.now(), conversation_id, True)
         print(robot_chat_id)
         if 'citations' in backend_json_data.keys():
-            chat_handler.upload_citations(robot_chat_id, backend_json_data['citations'])
+            if backend_json_data['citations'] is not None:
+                chat_handler.upload_citations(robot_chat_id, backend_json_data['citations'])
         robot_chat_data = chat_handler.get_chat_by_cid(robot_chat_id)
 
         i = 0
@@ -70,6 +71,17 @@ def generate_response(user_id):
     except Exception as e:
         traceback.print_exc()
         return json.dumps({'success': False, 'Exception data': str(e)}), 500
+
+@app.route('/generate_conv_title/<user_id>', methods=['GET'])
+@cross_origin()
+def get_chat_titles(user_id):
+    try:
+        chat_data = cd(user_id)
+        chat_titles = chat_data.get_chat_titles()
+        return json.dumps({'success': True, 'conversation_title': chat_titles}), 200
+    except Exception as e:
+        return json.dumps({'success': False, 'exception_type': str(type(e).__name__), 'exception_details': str(e)}), 500
+
 
 @app.route('/generate_conv_title/', methods=['POST'])
 @cross_origin()
@@ -134,7 +146,7 @@ def update_conversation_title(user_id):
         conversation_id = json_data['conversation_id']
         new_title = json_data['new_title']
         chat_data.rename_conversation_title(conversation_id, new_title)
-        return json.dumps({'success': True}), 201
+        return json.dumps({'success': True}), 200
     except Exception as e:
         traceback.print_exc()
         return json.dumps({'succes': False, 'exception_details': str(e)}), 500
@@ -147,7 +159,7 @@ def get_chat(user_id):
         chat_data = cd(user_id)
         chat_logs = chat_data.return_chat_history()
         chat_data.close_conn()
-        return json.dumps({'success': True, 'chat_history': chat_logs, 'user_id': int(user_id)}), 201
+        return json.dumps({'success': True, 'chat_history': chat_logs, 'user_id': int(user_id)}), 200
     else:
         return json.dumps({'success': False, 'content': "Only 'GET' request method are allowed for /get_chat/" + str(user_id) + "."}), 400
 

@@ -7,8 +7,8 @@ function ChatHistory({ backendURL, userId, onSelectChat, onNewChat }) {
   //FOR TESTING PURPOSE, WILL DELETE LATER
   // const [recentChats, setRecentChats] = useState([
   //   { id: 1, title: "Chat 1" },
-  //   { id: 2, title: "Chat 2" },
-  //   { id: 3, title: "Chat 3" },
+  //   { id: 9, title: "Chat 9" },
+  //   { id: 10, title: "Chat 10" },
   // ]);
 
   useEffect(() => {
@@ -23,19 +23,23 @@ function ChatHistory({ backendURL, userId, onSelectChat, onNewChat }) {
         throw new Error("Failed to fetch chat history");
       }
       const data = await response.json();
+      console.log(data.chat_history);
       setRecentChats(data.chat_history);
     } catch (error) {
       console.error("Error fetching chat history:", error.message);
     }
   };
 
+
+ 	
   const fetchChatTitles = async () => {
     try {
-      const response = await fetch(`${backendURL}/generate_conv_title`);
+      const response = await fetch(`${backendURL}/generate_conv_title/${userId}`);
       if (!response.ok) {
         throw new Error("Failed to fetch chat titles");
       }
       const data = await response.json();
+      console.log(data.conversation_title);
       setRecentChats(data.conversation_title);
     } catch (error) {
       console.error("Error fetching chat titles:", error.message);
@@ -51,7 +55,7 @@ function ChatHistory({ backendURL, userId, onSelectChat, onNewChat }) {
       <ul className="recent-chats-list">
         {recentChats.map((chat) => (
           <li
-            key={chat.id}
+            key={chat.conversation_id}
             className="recent-chat-item"
             onClick={() => onSelectChat(chat)}
           >

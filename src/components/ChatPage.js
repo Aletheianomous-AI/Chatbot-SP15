@@ -17,12 +17,12 @@ const ChatPage = () => {
   const handleNewChat = async (user_input) => {
     try {
       // Call the /generate_conv_title/ endpoint to generate conversation title
-      const response = await fetch(`${backendURL}/generate_conv_title`, {
+      const response = await fetch(`${backendURL}/generate_conv_title/${userId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ input: user_input }),
+	      body: JSON.stringify({ chat_data: user_input, debug_mode: true }),
       });
 
       if (!response.ok) {

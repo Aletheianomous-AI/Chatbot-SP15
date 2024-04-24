@@ -265,7 +265,26 @@ class ChatData():
         chat_id = chat_id[0][0]
         print("Uploaded chat as chat_id " + str(chat_id))
         return chat_id
-    
+   
+    def get_chat_titles(self):
+        """Returns the name of conversations as an array
+        for a specific user.
+        """
+        conversations_query = """
+        SELECT *
+        FROM dbo.Conversation
+        WHERE UserID = ?
+        ORDER BY ConversationID;
+        """
+
+        cursor = self.conn.cursor()
+        cursor.execute(conversations_query, self.userId)
+        query_results = cursor.fetchall()
+        titles_list = []
+        for row in query_results:
+            titles_list.append(row[1])
+        return titles_list
+
     def return_chat_history(self):
         conversations_query = """
             SELECT *
@@ -284,11 +303,10 @@ class ChatData():
             conversation_dict = {}
             conversation_dict['conversation_title'] = row[1]
             conversation_dict['messages'] = []
-            conversation_dict['conversation_id'] = row[0]
+            conversation_dict['id'] = row[0]
             conversations_ls_json.append(conversation_dict.copy())
 
 
-        print(conversations_ls_json)
         fetching_query = """
         SELECT ch.chat_ID, ch.Chat_Content, ch.Belongs_To_Bot, ch.Time_Of_Output, conv.ConversationName, cc.Conversation_ID, conv.UserID
         FROM
@@ -311,7 +329,11 @@ class ChatData():
                 message_dict['citations'] = citations
             else:
                 message_dict['citations'] = None
-            conversations_ls_json[conversation_id-1]['messages'].append(message_dict) ## Append messages list in
-                #converations_ls_json element.
+            i = 0
+            for item in conversations_ls_json:
+                if item['id'] == conversation_id:
+                    conversations_ls_json[i]['messages'].append(message_dict)
+                i+=1
+        print(conversations_ls_json)
         del cursor
         return conversations_ls_json
