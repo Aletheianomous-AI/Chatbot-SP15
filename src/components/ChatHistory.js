@@ -25,6 +25,7 @@ function ChatHistory({ backendURL, userId, onSelectChat, onNewChat }) {
       const data = await response.json();
       console.log(data.chat_history);
       setRecentChats(data.chat_history);
+      console.log("New state of recentChats: ", recentChats);
     } catch (error) {
       console.error("Error fetching chat history:", error.message);
     }

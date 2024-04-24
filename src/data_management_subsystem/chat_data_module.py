@@ -303,7 +303,7 @@ class ChatData():
             conversation_dict = {}
             conversation_dict['conversation_title'] = row[1]
             conversation_dict['messages'] = []
-            conversation_dict['id'] = row[0]
+            conversation_dict['conversation_id'] = row[0]
             conversations_ls_json.append(conversation_dict.copy())
 
 
@@ -331,7 +331,7 @@ class ChatData():
                 message_dict['citations'] = None
             i = 0
             for item in conversations_ls_json:
-                if item['id'] == conversation_id:
+                if item['conversation_id'] == conversation_id:
                     conversations_ls_json[i]['messages'].append(message_dict)
                 i+=1
         print(conversations_ls_json)
