@@ -1,9 +1,9 @@
 from pytz import timezone
-from ConnectionFailureException import ConnectionFailureException
-from RecordNotFoundException import RecordNotFoundException
-from NonExistentUserException import NonExistentUserException
-from RequestFailureException import RequestFailureException
-from user_account_management import UserAccountManagement
+from .ConnectionFailureException import ConnectionFailureException
+from .RecordNotFoundException import RecordNotFoundException
+from .NonExistentUserException import NonExistentUserException
+from .RequestFailureException import RequestFailureException
+from .user_account_management import UserAccountManagement
 
 import os
 import time
@@ -25,7 +25,7 @@ class ChatData():
         try:
             record_check_query = """
                 SELECT COUNT(*) FROM dbo.Conversation
-                WHERE UserID = ?
+                WHERE UserID = ?;
             """
             cursor = self.conn.cursor()
             cursor.execute(record_check_query, self.userId)
@@ -39,6 +39,7 @@ class ChatData():
                 VALUES (?, ?);
             """
             cursor.execute(new_conv_query, conversation_title, self.userId)
+            cursor.commit()
         except Exception as e:
             raise RequestFailureException("Could not create new conversation. Exception details: " + str(e))
 
@@ -73,6 +74,7 @@ class ChatData():
         try:
             cursor = self.conn.cursor()
             cursor.execute(rename_query, new_title, conversation_id)
+            cursor.commit()
         except Exception as e:
             raise RequestFailureException("Could not rename conversation title of conversation ID " + str(conversation_id) + ". Exception details: " + str(e))
 
@@ -104,8 +106,8 @@ class ChatData():
                     END
 
                 DECLARE @SurrogateKey int;
-                SELECT @SurrogateKey = @SurrogateKey;
-                FROM dbo.Citation_Chat_History
+                SELECT @SurrogateKey = (MAX(Surrogate_Key) + 1)
+                FROM dbo.Citation_Chat_History;
 
                 IF (@SurrogateKey IS NULL)
                     BEGIN
@@ -119,7 +121,8 @@ class ChatData():
             self.conn.autocommit= False
             for citation in citations_list:
                 cursor = self.conn.cursor()
-                cursor.execute(citation_list_append_qry, Link, Link, Link, response_chat_id)
+                print(citation)
+                cursor.execute(citation_list_append_qry, citation, citation, citation, response_chat_id)
                 cursor.commit()
                 del cursor
             self.conn.autocommit= True
@@ -259,6 +262,7 @@ class ChatData():
         )
         cursor.execute(chat_id_qry)
         chat_id = cursor.fetchall()
+        chat_id = chat_id[0][0]
         print("Uploaded chat as chat_id " + str(chat_id))
         return chat_id
     
