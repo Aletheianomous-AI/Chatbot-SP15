@@ -18,9 +18,14 @@ const ChatWindow = ({ backendURL, userId, currentChat }) => {
     if (currentChat) {
       // Update chat title when current chat changes
       console.log(currentChat.id);
+      console.log("Chat messages: ", currentChat.messages);
       setChatTitle(currentChat.title);
       //Update current message in current chat
-      setMessages(messages); //Function does not work.
+      if (typeof currentChat.messages !== "undefined") {
+	      setMessages(currentChat.messages); //Function does not work.
+      } else {
+	      setMessages([]);
+      }
     }
   }, [currentChat]);
 
@@ -48,9 +53,9 @@ const ChatWindow = ({ backendURL, userId, currentChat }) => {
     }
   };
 
-  const getResponseFromAI = async (message) => {
+  const getResponseFromAI = async (userMessage, message) => {
     // Send user message to backend
-    await sendMessageToBackend(message);
+    //await sendMessageToBackend(message);
 
     // Receive AI response from backend
     try {
@@ -79,7 +84,7 @@ const ChatWindow = ({ backendURL, userId, currentChat }) => {
       console.log(messages_copy);
       messages_copy = [...messages, { sender: "AI", text: aiResponse.content}];
       console.log(messages_copy);
-      setMessages([...messages, { sender: "AI", text: aiResponse.content}]);
+      setMessages([...messages, userMessage, { sender: "AI", text: aiResponse.content}]);
       console.log("Messages after appending AI response: ", messages);
     } catch (error) {
       console.error("Error receiving AI response:", error.message);
@@ -93,7 +98,8 @@ const ChatWindow = ({ backendURL, userId, currentChat }) => {
       console.log("Messages before userMessage appended: ", messages);
       setMessages([...messages, userMessage]); //Function does not update messages.
       console.log("Messages after userMessage appended: ", messages);
-      await getResponseFromAI(inputValue);
+      await sendMessageToBackend(inputValue);
+      await getResponseFromAI(userMessage, inputValue);
       console.log(messages);
       setInputValue("");
     }
