@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import "./styles/ChatHistory.css";
 
 function ChatHistory({ backendURL, userId, onSelectChat, onNewChat }) {
-  const [recentChats, setRecentChats] = useState([]);
+  //const [recentChats, setRecentChats] = useState([]);
 
   //FOR TESTING PURPOSE, WILL DELETE LATER
-  // const [recentChats, setRecentChats] = useState([
-  //   { id: 1, title: "Chat 1" },
-  //   { id: 9, title: "Chat 9" },
-  //   { id: 10, title: "Chat 10" },
-  // ]);
+   const [recentChats, setRecentChats] = useState([
+     { id: 1, title: null },
+     { id: 9, title: null },
+     { id: 10, title: null },
+   ]);
 
   useEffect(() => {
     fetchChatHistory(); //Fetch chat history on component mount

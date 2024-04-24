@@ -11,7 +11,7 @@ import requests
 
 app = Flask(__name__)
 cors = CORS(app)
-app.config['CORS_HEADERS'] = 'Content-Type'
+app.config['CORS_HEADERS'] = 'Content-Type/json'
 
 @app.route('/post_chat/<user_id>', methods=['POST'])
 @cross_origin()
@@ -38,7 +38,6 @@ def post_chat(user_id):
 @app.route('/generate_response/<user_id>', methods=['POST'])
 @cross_origin()
 def generate_response(user_id):
-    
     try:
         backend_ip = os.environ.get("BACKEND_IP")
         user_id = int(user_id)
@@ -47,6 +46,7 @@ def generate_response(user_id):
         # with the backend server.
         
         json_data = request.get_json(silent=True)
+        print(json_data)
         chat_input = json_data['chat_data']
         conversation_id = json_data['conversation_id']
         if 'debug_mode' in json_data.keys():

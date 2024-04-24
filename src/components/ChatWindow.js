@@ -54,6 +54,7 @@ const ChatWindow = ({ backendURL, userId, currentChat }) => {
 
     // Receive AI response from backend
     try {
+      console.log(currentChat.id);
       const response = await fetch(
         `${backendURL}/generate_response/${userId}`,
         {
