@@ -83,9 +83,9 @@ def get_chat_titles(user_id):
         return json.dumps({'success': False, 'exception_type': str(type(e).__name__), 'exception_details': str(e)}), 500
 
 
-@app.route('/generate_conv_title/', methods=['POST'])
+@app.route('/generate_conv_title/<user_id>', methods=['POST'])
 @cross_origin()
-def generate_conv():
+def generate_conv(user_id):
     if (request.method=="POST"):
         try:
             json_data = request.get_json(silent=False)
