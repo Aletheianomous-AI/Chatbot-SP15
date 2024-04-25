@@ -21,7 +21,7 @@ const ChatWindow = ({ backendURL, userId, currentChat }) => {
       setChatTitle(currentChat.title);
       //Update current message in current chat
       if (typeof currentChat.messages !== "undefined") {
-	      setMessages(currentChat.messages); //Function does not work.
+	      setMessages(currentChat.messages);
       } else {
 	      setMessages([]);
       }
