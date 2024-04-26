@@ -14,6 +14,7 @@ const ChatPage = () => {
     setCurrentChat(chat); // Update current chat when a chat is selected
   };
 
+  /*
   const handleNewChat = async (user_input) => {
     try {
 
@@ -51,7 +52,7 @@ const ChatPage = () => {
       console.error("Error generating conversation title:", error.message);
     }
   };
-
+*/
   //Make the history sidebar resizeable
   const [width, setWidth] = useState(300);
   const [mouseDown, setMouseDown] = useState(false);
@@ -87,8 +88,8 @@ const ChatPage = () => {
           backendURL={backendURL}
           userId={userId}
           onSelectChat={handleChatSelect}
-          onNewChat={handleNewChat}
           recentChats={recentChats}
+          setCurrentChat={setCurrentChat}
         />
       </div>
 

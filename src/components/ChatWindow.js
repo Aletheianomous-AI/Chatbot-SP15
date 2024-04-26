@@ -4,11 +4,6 @@ import "./styles/ChatWindow.css";
 //Chat window only
 const ChatWindow = ({ backendURL, userId, currentChat }) => {
   const [messages, setMessages] = useState([]);
-  //FOR TESTING PURPOSE, WILL DELETE LATER
-  // const [messages, setMessages] = useState([
-  //   { sender: "User", text: "Hello!", ai: false },
-  //   { sender: "AI", text: "Hi there! How can I help you?", ai: true },
-  // ]);
 
   const [inputValue, setInputValue] = useState("");
   const [chatTitle, setChatTitle] = useState("");
@@ -21,9 +16,9 @@ const ChatWindow = ({ backendURL, userId, currentChat }) => {
       setChatTitle(currentChat.title);
       //Update current message in current chat
       if (typeof currentChat.messages !== "undefined") {
-	      setMessages(currentChat.messages);
+        setMessages(currentChat.messages);
       } else {
-	      setMessages([]);
+        setMessages([]);
       }
     }
   }, [currentChat]);
@@ -37,7 +32,10 @@ const ChatWindow = ({ backendURL, userId, currentChat }) => {
           headers: {
             "Content-Type": "application/json",
           },
-		body: JSON.stringify({ chat_data: message, conversation_id:  currentChat.id}),
+          body: JSON.stringify({
+            chat_data: message,
+            conversation_id: currentChat.id,
+          }),
         }
       );
 
@@ -66,7 +64,11 @@ const ChatWindow = ({ backendURL, userId, currentChat }) => {
           headers: {
             "Content-Type": "application/json",
           },
-		body: JSON.stringify({ chat_data: message, conversation_id: currentChat.id, debug_mode: true}),
+          body: JSON.stringify({
+            chat_data: message,
+            conversation_id: currentChat.id,
+            debug_mode: true,
+          }),
         }
       );
 
@@ -81,13 +83,67 @@ const ChatWindow = ({ backendURL, userId, currentChat }) => {
       console.log("Messages before appending AI response: ", messages);
       var messages_copy = [...messages];
       console.log(messages_copy);
-      messages_copy = [...messages, { sender: "AI", text: aiResponse.content}];
+      messages_copy = [...messages, { sender: "AI", text: aiResponse.content }];
       console.log(messages_copy);
-      setMessages([...messages, userMessage, { sender: "AI", text: aiResponse.content}]);
-      currentChat.messages = [...currentChat.messages, userMessage, {sender: "AI", text: aiResponse.content}];	    
+      setMessages([
+        ...messages,
+        userMessage,
+        { sender: "AI", text: aiResponse.content },
+      ]);
+      currentChat.messages = [
+        ...currentChat.messages,
+        userMessage,
+        { sender: "AI", text: aiResponse.content },
+      ];
       console.log("Messages after appending AI response: ", messages);
     } catch (error) {
       console.error("Error receiving AI response:", error.message);
+    }
+  };
+
+  // Generate conversation title based on the initial message
+  const handleInitialMessage = async (userMessage) => {
+    try {
+      const response = await fetch(
+        `${backendURL}/generate_conv_title/${userId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ chat_data: userMessage }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to generate conversation title");
+      }
+
+      const data = await response.json();
+      const newTitle = data.conversation_title;
+
+      // Update conversation title
+      const updateTitleResponse = await fetch(
+        `${backendURL}/update_conversation_title/${userId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            conversation_id: currentChat.id,
+            new_title: newTitle,
+          }),
+        }
+      );
+
+      if (!updateTitleResponse.ok) {
+        throw new Error("Failed to update conversation title");
+      }
+
+      // Handle success
+    } catch (error) {
+      console.error("Error handling initial message:", error.message);
     }
   };
 
@@ -100,6 +156,7 @@ const ChatWindow = ({ backendURL, userId, currentChat }) => {
       console.log("Messages after userMessage appended: ", messages);
       await sendMessageToBackend(inputValue);
       await getResponseFromAI(userMessage, inputValue);
+      await handleInitialMessage(inputValue);
       console.log(messages);
       setInputValue("");
     }
