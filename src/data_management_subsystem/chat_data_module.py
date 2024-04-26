@@ -188,6 +188,50 @@ class ChatData():
             self.userId = userId
         else:
             raise NonExistentUserException(userId)
+           
+       def delete_entire_chat(self):
+             """This function deletes the entire chat of the user."""
+      
+             query = """
+             DELETE FROM dbo.Chat_Conversation
+             WHERE UserID = ?
+             """
+             cursor = self.conn.cursor()
+             cursor.execute(query, self.userID)
+
+
+        def delete_chat_by_period(self, period_type, period):
+             """Deletes the chat history by a specified period."""
+      
+             query = """
+             DECLARE @chatID table (id int);
+             DECLARE @citationID table (id int);
+             
+             INSERT INTO @chatID SELECT Chat_ID
+             FROM dbo.Chat_History
+             WHERE Time_Of_Output > DATEADD(?, ?, GETDATE());
+             
+             INSERT INTO @citationID SELECT Citation_ID 
+             FROM dbo.Citation_Chat_History
+             WHERE Chat_ID IN (SELECT id FROM @chatID);
+             
+             DELETE FROM dbo.Citation_Chat_History
+             WHERE Chat_ID IN (SELECT id FROM @chatID);
+             
+             DELETE FROM dbo.Citation
+             WHERE Citation_ID IN (SELECT id FROM @citationID);
+             
+             DELETE FROM dbo.Chat_Conversation
+             WHERE Chat_ID IN (SELECT id FROM @chatID);
+             
+             DELETE FROM dbo.Chat_History
+             WHERE Chat_ID IN (SELECT id FROM @chatID);
+             
+             """
+      
+             conn = self.conn.cursor()
+             period = period * -1
+             cursor = cursor.execute(query, period_type, period)
 
     def get_chat_by_cid(self, chat_id):
         """Returns the chat history by chat id.
