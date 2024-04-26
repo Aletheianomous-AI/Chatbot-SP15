@@ -243,8 +243,8 @@ class ChatData():
             DECLARE @ChatID int;
     		SELECT @ChatID = (MAX(Chat_ID) + 1)
             FROM dbo.Chat_History;
-            INSERT INTO dbo.Chat_History (Chat_ID, Chat_Content, Belongs_To_Bot, Time_Of_Output)
-            VALUES (@ChatID, ?, ?, ?);
+            INSERT INTO dbo.Chat_History (Chat_ID, Chat_Content, Belongs_To_Bot, Time_Of_Output, Use_For_Training)
+            VALUES (@ChatID, ?, ?, ?, 0);
             INSERT INTO dbo.Chat_Conversation (Chat_ID, UserID, Conversation_ID) VALUES (@ChatID, ?, ?);
         """
         )
