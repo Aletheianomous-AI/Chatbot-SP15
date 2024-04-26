@@ -1,4 +1,5 @@
 from .SQLDatabaseWrapper as sdw
+from .chat_data_module import ChatData as cd
 from datetime import datetime as dt
 
 import os
@@ -182,6 +183,10 @@ class UserAccountManagement(sdw):
         def delete_user(self):
                 """This function deletes the user's account."""
 
+                
+                chat_data = cd(self.userID)
+                chat_data.delete_entire_chat()
+                chat_data.conn.close()
                 query = """
                         DECLARE @userId = ?
 
