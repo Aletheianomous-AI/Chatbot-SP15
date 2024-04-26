@@ -240,6 +240,11 @@ class ChatData():
 
         # CREATE SQL QUERY THAT UPLOADS CHAT DATA.
         upload_query = ("""
+         DECLARE @UseForTraining BIT;
+         SELECT @UseForTraining = Share_Conversation_For_Training
+         FROM dbo.Setting
+         WHERE UserID = ?;
+        
             DECLARE @ChatID int;
     		SELECT @ChatID = (MAX(Chat_ID) + 1)
             FROM dbo.Chat_History;
@@ -250,7 +255,7 @@ class ChatData():
         )
         self.conn.autocommit = False
         cursor = self.conn.cursor()
-        cursor.execute(upload_query, chat_data, str(is_from_bot_int), timestamp, self.userId, conversation_id)
+        cursor.execute(upload_query, self.userId, chat_data, str(is_from_bot_int), timestamp, self.userId, conversation_id)
         self.conn.commit()
         self.conn.autocommit = True
         del cursor
