@@ -45,8 +45,12 @@ def create_user():
 @cross_origin()
 def generate_verification_code(user_id):
     try:
+        json_data = request.get_json(silent=True)
+        test_mode = False
+        if 'test_mode' in json_data.keys():
+            test_mode = json_data['test_mode']
         uam_object = uam(int(user_id))
-        correct_code = uam_object.generate_2fa_code(app)
+        correct_code = uam_object.generate_2fa_code(app, test_mode)
         return json.dumps({'success': True}), 200
     except Exception as e:
        return json.dumps({'success': False, 'exception_type': str(type(e).__name__), 'exception_details': str(e)}), 500 
