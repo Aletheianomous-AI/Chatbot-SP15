@@ -138,9 +138,9 @@ class UserAccountManagement(sdw):
                 """Creates a new user profile in the database."""
 
                 if share_conv_for_training is False:
-                        share_conv_for_tr_int = 0
+                    share_conv_for_tr_int = 0
                 else:
-                        share_conv_for_tr_int = 1
+                    share_conv_for_tr_int = 1
 
                 query = """
                         DECLARE @dob DATE = ?;
