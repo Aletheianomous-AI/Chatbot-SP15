@@ -1,6 +1,7 @@
 pandas
 numpy
 flask
+flask_mail
 matplotlib
 pandoc
 jupyterlab
