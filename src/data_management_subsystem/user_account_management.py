@@ -179,6 +179,32 @@ class UserAccountManagement(sdw):
                 else:
                         raise AssertionError("'" + email + "' has been taken. Please use a different address.")
                 
+        def login_user(self, email, password):
+            """This function logins the user by verifying their email and password."""
+            query = """
+                DECLARE @email VARCHAR(MAX) = ?;
+                DECLARE @password VARCHAR(MAX) = ?;
+
+                IF EXISTS (SELECT * FROM dbo.LOGIN WHERE Email=@email AND Password= CAST(@password AS VARBINARY(MAX)))
+                    BEGIN
+                        SELECT UserID FROM dbo.LOGIN WHERE Email=@email AND Password= CAST(@password AS VARBINARY(MAX));
+                    END
+                ELSE
+                    BEGIN
+                        SELECT -1;
+                    END
+            """
+            cursor = self.conn.cursor()
+            cursor.execute(query, email, password)
+            results = cursor.fetchall()
+            results = results[0][0]
+            if results > 0:
+                self.userId = results
+            else:
+                raise ValueError("The username and/or password are incorrect.")
+
+
+                
         def generate_2fa_code(self, flask_app):
                 """This function generates a six digit authentication code for the user,
                     uploads the code into the SQL 2FA Email table,
@@ -189,7 +215,7 @@ class UserAccountManagement(sdw):
                 DECLARE @AuthCode INT = ?;
                 DECLARE @userID INT = ?;
 
-                IF EXISTS(SELECT UserID FROM dbo.Email2FA)
+                IF EXISTS(SELECT UserID FROM dbo.Email2FA WHERE UserID = @userID)
                     BEGIN
                         UPDATE dbo.Email2FA
                         SET EncryptedAuthCode = dbo.Encrypt2String(@AuthCode)
@@ -207,6 +233,42 @@ class UserAccountManagement(sdw):
                 mailer = MFAMailer(self.userId, flask_app)
                 mailer.sendCode(code)
                 mailer.conn.close()
+                return code
+        
+        def verify_2fa_code(self, code):
+            """This function verifies the six-digit verification code and deletes
+            code from database record.
+            """
+
+            query = """
+            DECLARE @AuthCode INT = ?;
+            DECLARE @userID INT = ?;
+
+            IF EXISTS(SELECT UserID FROM dbo.Email2FA WHERE userID = @userID AND EncryptedAuthCode = dbo.Encrypt2String(@AuthCode))
+                BEGIN
+                    DELETE FROM dbo.Email2FA
+                    WHERE UserID = @userID;
+                    SELECT 1;
+                END
+            ELSE
+                BEGIN
+                    SELECT -1;
+                END
+            """
+
+            cursor = self.conn.cursor()
+            cursor.execute(query, code, self.userId)
+            status = cursor.fetchall()
+            status = status[0][0]
+            if status == 1:
+                return True
+            elif status == -1:
+                return False
+            else:
+                raise AssertionError("Got invalid DB status code " + str(status) + " while authenticating verification code.")
+            
+            
+
        
         
         
