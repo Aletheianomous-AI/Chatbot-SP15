@@ -1,6 +1,8 @@
-from .SQLDatabaseWrapper as sdw
+from .SQLDatabaseWrapper import SQLDatabaseWrapper as sdw
 from .chat_data_module import ChatData as cd
+from.mfa_mailer import MFAMailer
 from datetime import datetime as dt
+from secrets import randbelow
 
 import os
 import pyodbc
@@ -176,7 +178,35 @@ class UserAccountManagement(sdw):
                         self.userID = results
                 else:
                         raise AssertionError("'" + email + "' has been taken. Please use a different address.")
+                
+        def generate_2fa_code(self, flask_app):
+                """This function generates a six digit authentication code for the user,
+                    uploads the code into the SQL 2FA Email table,
+                    and sends the email to the user containing the code.
+                """
+                code = randbelow(1000000)
+                query = """
+                DECLARE @AuthCode INT = ?;
+                DECLARE @userID INT = ?;
 
+                IF EXISTS(SELECT UserID FROM dbo.Email2FA)
+                    BEGIN
+                        UPDATE dbo.Email2FA
+                        SET EncryptedAuthCode = dbo.Encrypt2String(@AuthCode)
+                        WHERE UserID = @userID;
+                    END
+                ELSE
+                    BEGIN
+                        INSERT INTO dbo.Email2FA (UserID, EncryptedAuthCode)
+                        VALUES (@userID, dbo.Encrypt2String(@AuthCode));
+                    END
+                """
+
+                cursor = self.conn.cursor()
+                cursor.execute(query, code, self.userID)
+                mailer = MFAMailer(self.userID, flask_app)
+                mailer.sendCode(code)
+                mailer.conn.close()
        
         
         
