@@ -3,7 +3,6 @@ from .ConnectionFailureException import ConnectionFailureException
 from .RecordNotFoundException import RecordNotFoundException
 from .NonExistentUserException import NonExistentUserException
 from .RequestFailureException import RequestFailureException
-from .user_account_management import UserAccountManagement
 
 import os
 import time
@@ -44,6 +43,30 @@ class SQLDatabaseWrapper():
         """This function closes the server connection."""
         self.conn.close()
         self.conn = None
+
+    def user_exists(self, userId):
+        """Returns whether user exists in the database.
+        
+        PARAMETERS
+        conn - The pyodbc connection object that is connected to SQL database
+        userId - The userId to check if it exists.
+        """
+        query = """ SELECT COUNT(*)
+        FROM dbo.Login
+        WHERE UserID = '""" + str(userId) + """'
+        """
+        cursor = self.conn.cursor()
+        cursor.execute(query)
+        count = cursor.fetchall()
+        count = count[0]
+        count = list(count)
+        count = count[0]
+        if count == 0:
+            return False
+        elif count == 1:
+            return True
+        else:
+            raise AssertionError("Expected user count to be 1 but got " + str(count))
     
     def __init__(self, userId):
         """This function intializes the SQLDatabaseWrapper object."""
@@ -53,10 +76,14 @@ class SQLDatabaseWrapper():
         self.uname = os.environ.get('ALETHEIANOMOUS_AI_UNAME')
         self.passwrd = os.environ.get('ALETHEIANOMOUS_AI_PASSWRD')
         self.conn = None
-        self.connect()
-        self.userId = userId
-        if UserAccountManagement.user_exists(self.conn, userId):
-            self.userId = userId
+        if self.server is not None:
+            self.connect()
         else:
-            raise NonExistentUserException(userId)
+            raise AssertionError("Could not find system environment variable ALETHEIANOMOUS_AI_SERVER.")
+        self.userId = userId
+        if userId is not None:
+            if self.user_exists(userId):
+                self.userId = userId
+            else:
+                raise NonExistentUserException(userId)
 

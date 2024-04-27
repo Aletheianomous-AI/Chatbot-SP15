@@ -53,10 +53,11 @@ def generate_verification_code(user_id):
         correct_code = uam_object.generate_2fa_code(app, test_mode)
         return json.dumps({'success': True}), 200
     except Exception as e:
+       traceback.print_exc()
        return json.dumps({'success': False, 'exception_type': str(type(e).__name__), 'exception_details': str(e)}), 500 
     
 
-@app.route('/authenticate_verification_code/<user_id>', methods=['POST'])
+@app.route('/authenticate_verification_code/<user_id>', methods=['PUT'])
 @cross_origin()
 def authenticate_verification_code(user_id):
     try:
@@ -73,7 +74,7 @@ def authenticate_verification_code(user_id):
         return json.dumps({'success': False, 'exception_type': str(type(e).__name__), 'exception_details': str(e)}), 500     
 
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['PUT'])
 @cross_origin()
 def login_user():
     """This function handles login requests by verifying the user's email and password."""
@@ -250,7 +251,7 @@ def update_conversation_title(user_id):
         return json.dumps({'success': False, 'exception_type': str(type(e).__name__),'exception_details': str(e)}), 500
     
 @app.route('/delete_chat/period/<user_id>', methods=['POST'])
-@cross_origin
+@cross_origin()
 def delete_chat_by_period(user_id):
     try:
         chat_data = cd(int(user_id))
@@ -264,7 +265,6 @@ def delete_chat_by_period(user_id):
         return json.dumps({'success': False, 'exception_type': str(type(e).__name__),'exception_details': str(e)}), 500     
 
 @app.route('/delete_chat/all/<user_id>', methods=['PUT'])
-@cross_origin
 def delete_entire_chat(user_id):
     try:
         chat_data = cd(int(user_id))
@@ -278,7 +278,6 @@ def delete_entire_chat(user_id):
 @app.route('/get_chat/<user_id>', methods=['GET'])
 @cross_origin()
 def get_chat(user_id):
-    
     if request.method == "GET":
         chat_data = cd(int(user_id))
         chat_logs = chat_data.return_chat_history()

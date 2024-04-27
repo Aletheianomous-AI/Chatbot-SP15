@@ -9,11 +9,12 @@ class MFAMailer(sdw):
 
     def __init__(self, userID, flask_app, test_mode=False):
         super().__init__(userID)
-        self.mail = Mail(flask_app)
         self.flask_app = flask_app
         self.flask_app.config['MAIL_SERVER'] = os.environ.get("MFA_Mail_Server")
         self.flask_app.config['MAIL_PORT'] = os.environ.get("MFA_Mail_Port")
         self.test_mode = test_mode
+        if self.flask_app.config['MAIL_SERVER'] is None:
+            raise AssertionError("Could not get MFA_Mail_Server environment variable. Please ensure that the environment variables are set up on the frontend server.")
         if self.test_mode:
             self.flask_app.config['MAIL_USERNAME'] = os.environ.get("MFA_Test_Mail_Uname")
             self.flask_app.config['MAIL_PASSWORD'] = os.environ.get("MFA_Test_Mail_Password")
@@ -22,6 +23,12 @@ class MFAMailer(sdw):
             self.flask_app.config['MAIL_PASSWORD'] = os.environ.get("MFA_Mail_Password")
         self.flask_app.config['MAIL_USE_TLS'] = True
         self.flask_app.config['MAIL_USE_SSL'] = False
+        self.mail = Mail(self.flask_app)
+        print("Mail Server:", self.flask_app.config['MAIL_SERVER'])
+        print("Mail port: ", self.flask_app.config['MAIL_PORT'])
+        print("Mail Username: ", self.flask_app.config['MAIL_USERNAME'])
+        print("Mail Password: ", self.flask_app.config['MAIL_PASSWORD'])
+
 
 
     def send_code(self, code):
@@ -48,7 +55,7 @@ class MFAMailer(sdw):
         print("Sending auth code to " + email_addr + "...")
 
         with self.flask_app.app_context():
-            msg = Message(subject="Your Authentication Code for Signing Into Aletheianomous AI", recipients=[email_addr])
+            msg = Message(subject="Your Authentication Code for Signing Into Aletheianomous AI", sender="aletheianomous-ai@demomailtrap.com", recipients=[email_addr])
             msg.body = ("Hello " + username + ",\nYour authentication code is " + str(code) + ".It will expire on " + 
                 code_exp_time_str + ".\nPlease DO NOT SHARE this code with anyone. Aletheianomous AI will never ask for your six-digit code.\n" + 
                 "If you were not signing in, you can safely ignore this email.\n\nBest regards,\nAletheianomous AI")

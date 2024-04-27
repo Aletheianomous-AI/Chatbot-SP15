@@ -1,6 +1,7 @@
 pandas
 numpy
 flask
+Flask-Cors
 flask_mail
 matplotlib
 pandoc

@@ -26,6 +26,7 @@ class UserAccountManagement(sdw):
                 else:
                         use_light_theme_bit = 0
                 cursor.execute(query, use_light_theme_bit, self.userId)
+                cursor.commit()
 
         def set_share_conv_for_training(self, share_conv_for_training: bool):
                 """This function sets the 'Share_Conversation_For_Training' attribute in the 
@@ -43,6 +44,7 @@ class UserAccountManagement(sdw):
                 else:
                        share_conv_for_tr_bit = 0
                 cursor.execute(query, share_conv_for_tr_bit, self.userId)
+                cursor.commit()
 
         def get_user_info(self):
                 """This function returns user info"""
@@ -67,7 +69,8 @@ class UserAccountManagement(sdw):
                         WHERE UserID = ?
                 """
                 cursor = self.conn.cursor()
-                cursor.exeucte(query, new_username, self.userId)
+                cursor.execute(query, new_username, self.userId)
+                cursor.commit()
                 
                 
         def set_email(self, new_email: str):
@@ -81,6 +84,7 @@ class UserAccountManagement(sdw):
 
                 cursor = self.conn.cursor()
                 cursor.execute(query, new_email, self.userId)
+                cursor.commit()
 
         def set_DOB(self, new_dob: dt):
 
@@ -99,6 +103,7 @@ class UserAccountManagement(sdw):
 
                 cursor = self.conn.cursor()
                 cursor.execute(query, self.userId, new_dob.strftime("%Y-%m-%d"))
+                cursor.commit()
 
         def update_passwrd(self, old_pass: str, new_pass: str):
                 query = """
@@ -127,6 +132,7 @@ class UserAccountManagement(sdw):
                 cursor.execute(query, self.userId, old_pass, new_pass)
                 result = cursor.fetchall()
                 result = [0][0]
+                cursor.commit()
                 if result == 1:
                         pass
                 elif result == 0:
@@ -143,11 +149,15 @@ class UserAccountManagement(sdw):
                     share_conv_for_tr_int = 1
 
                 query = """
+                        SET NOCOUNT ON
+                        SET ANSI_WARNINGS OFF
                         DECLARE @dob DATE = ?;
                         DECLARE @age int = DATEDIFF(Year, @dob, GETDATE());
                         DECLARE @newUID int;
                         DECLARE @email VARCHAR(255) = ?;
                         DECLARE @username VARCHAR(255) = ?;
+                        DECLARE @password VARCHAR(MAX) = ?;
+                        DECLARE @share_conv BINARY = ?;
                         DECLARE @ERRORVAL int = -1;
                         
                         SELECT @newUID = MAX(UserID + 1)
@@ -155,11 +165,11 @@ class UserAccountManagement(sdw):
                         IF NOT EXISTS (SELECT * FROM dbo.Login WHERE Email = @email AND UserName = @username)
                             BEGIN
                                 INSERT INTO dbo.Login (UserID, Email, Age, Password, DOB, UserName)
-                                VALUES (@newUID, @email, @age, CAST(? AS VARBINARY(MAX)), @dob, @username);
+                                VALUES (@newUID, @email, @age, CAST(@password AS VARBINARY(MAX)), @dob, @username);
                         
                         
-                                INSERT INTO dbo.setting (UserID, Use_Light_Theme, Share_Conversation_For_Training)
-                                VALUES (@newUID, 1, ?);
+                                INSERT INTO dbo.Setting (UserID, Use_Light_Theme, Share_Conversation_For_Training)
+                                VALUES (@newUID, 1, @share_conv);
                         
                                 SELECT @newUID;
                             END
@@ -171,17 +181,24 @@ class UserAccountManagement(sdw):
 
                 """
                 cursor = self.conn.cursor()
-                cursor.execute(query, dob, email, userName, password, share_conv_for_tr_int)
-                results = cursor.fetchall()
-                results = results[0][0]
+                print(password)
+                rows = cursor.execute(query, dob, email, userName, password, share_conv_for_tr_int)
+                results_ls = []
+                for row in rows:
+                    results_ls.append(row[0])
+                print(results_ls)
+                results = results_ls[0]
                 if results > 0:
                         self.userId = results
                 else:
                         raise AssertionError("'" + email + "' has been taken. Please use a different address.")
+                cursor.commit()
                 
         def login_user(self, email, password):
             """This function logins the user by verifying their email and password."""
             query = """
+                SET NOCOUNT ON
+                SET ANSI_WARNINGS OFF
                 DECLARE @email VARCHAR(MAX) = ?;
                 DECLARE @password VARCHAR(MAX) = ?;
 
@@ -214,22 +231,24 @@ class UserAccountManagement(sdw):
                 query = """
                 DECLARE @AuthCode INT = ?;
                 DECLARE @userID INT = ?;
+                DECLARE @timestamp DATETIME = GETDATE();
 
                 IF EXISTS(SELECT UserID FROM dbo.Email2FA WHERE UserID = @userID)
                     BEGIN
                         UPDATE dbo.Email2FA
-                        SET EncryptedAuthCode = dbo.Encrypt2String(@AuthCode)
+                        SET EncryptedAuthCode = dbo.Encrypt2String(@AuthCode), TimeGenerated = @timestamp
                         WHERE UserID = @userID;
                     END
                 ELSE
                     BEGIN
-                        INSERT INTO dbo.Email2FA (UserID, EncryptedAuthCode)
-                        VALUES (@userID, dbo.Encrypt2String(@AuthCode));
+                        INSERT INTO dbo.Email2FA (UserID, EncryptedAuthCode, TimeGenerated)
+                        VALUES (@userID, dbo.Encrypt2String(@AuthCode), @timestamp);
                     END
                 """
 
                 cursor = self.conn.cursor()
                 cursor.execute(query, code, self.userId)
+                cursor.commit()
                 mailer = MFAMailer(self.userId, flask_app, test_mode)
                 mailer.send_code(code)
                 mailer.conn.close()
@@ -241,6 +260,8 @@ class UserAccountManagement(sdw):
             """
 
             query = """
+            SET NOCOUNT ON
+            SET ANSI_WARNINGS OFF
             DECLARE @AuthCode INT = ?;
             DECLARE @userID INT = ?;
 
@@ -261,8 +282,10 @@ class UserAccountManagement(sdw):
             status = cursor.fetchall()
             status = status[0][0]
             if status == 1:
+                cursor.commit()
                 return True
             elif status == -1:
+                cursor.commit()
                 return False
             else:
                 raise AssertionError("Got invalid DB status code " + str(status) + " while authenticating verification code.")
@@ -280,39 +303,22 @@ class UserAccountManagement(sdw):
                 chat_data.delete_entire_chat()
                 chat_data.conn.close()
                 query = """
-                        DECLARE @userId = ?
+                    DECLARE @userid INT = ?;
 
-                        DELETE FROM dbo.Setting
-                        WHERE UserID = @userid;
+                    DELETE FROM dbo.Setting
+                    WHERE UserID = @userid;
 
-                        DELETE FROM dbo.Login
-                        WHERE UserID = @userid;
+                    DELETE FROM dbo.Conversation
+                    WHERE UserID = @userid;
+
+                    
+                    DELETE FROM dbo.Chat_Conversation
+                    WHERE UserID = @userid;
+
+                    DELETE FROM dbo.Login
+                    WHERE UserID = @userid;
                 """
 
                 cursor = self.conn.cursor()
                 cursor.execute(query, self.userId)
-                
-        
-        def user_exists(conn, userId):
-            """Returns whether user exists in the database.
-            
-            PARAMETERS
-            conn - The pyodbc connection object that is connected to SQL database
-            userId - The userId to check if it exists.
-            """
-            query = """ SELECT COUNT(*)
-            FROM dbo.Login
-            WHERE UserID = '""" + str(userId) + """'
-            """
-            cursor = conn.cursor()
-            cursor.execute(query)
-            count = cursor.fetchall()
-            count = count[0]
-            count = list(count)
-            count = count[0]
-            if count == 0:
-                return False
-            elif count == 1:
-                return True
-            else:
-                raise AssertionError("Expected user count to be 1 but got " + str(count))
+                cursor.commit()

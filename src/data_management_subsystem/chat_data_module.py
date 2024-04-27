@@ -3,7 +3,7 @@ from .ConnectionFailureException import ConnectionFailureException
 from .RecordNotFoundException import RecordNotFoundException
 from .NonExistentUserException import NonExistentUserException
 from .RequestFailureException import RequestFailureException
-from .user_account_management import UserAccountManagement
+#from .user_account_management import UserAccountManagement
 
 import os
 import time
@@ -183,11 +183,35 @@ class ChatData():
         self.passwrd = os.environ.get('ALETHEIANOMOUS_AI_PASSWRD')
         self.conn = None
         self.connect()
-        self.userId = userId
-        if UserAccountManagement.user_exists(self.conn, userId):
+        self.userId = None
+        if self.user_exists(userId):
             self.userId = userId
         else:
             raise NonExistentUserException(userId)
+
+    def user_exists(self, userId):
+        """Returns whether user exists in the database.
+        
+        PARAMETERS
+        conn - The pyodbc connection object that is connected to SQL database
+        userId - The userId to check if it exists.
+        """
+        query = """ SELECT COUNT(*)
+        FROM dbo.Login
+        WHERE UserID = '""" + str(userId) + """'
+        """
+        cursor = self.conn.cursor()
+        cursor.execute(query)
+        count = cursor.fetchall()
+        count = count[0]
+        count = list(count)
+        count = count[0]
+        if count == 0:
+            return False
+        elif count == 1:
+            return True
+        else:
+            raise AssertionError("Expected user count to be 1 but got " + str(count))
            
     def delete_entire_chat(self):
             """This function deletes the entire chat of the user."""
@@ -197,7 +221,9 @@ class ChatData():
             WHERE UserID = ?
             """
             cursor = self.conn.cursor()
-            cursor.execute(query, self.userID)
+            cursor.execute(query, self.userId)
+            cursor.commit()
+
 
 
     def delete_chat_by_period(self, period_type, period):
@@ -229,9 +255,10 @@ class ChatData():
             
             """
     
-            conn = self.conn.cursor()
+            cursor = self.conn.cursor()
             period = period * -1
             cursor = cursor.execute(query, period_type, period)
+            cursor.commit()
 
     def get_chat_by_cid(self, chat_id):
         """Returns the chat history by chat id.
