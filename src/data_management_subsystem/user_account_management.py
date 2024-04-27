@@ -205,7 +205,7 @@ class UserAccountManagement(sdw):
 
 
                 
-        def generate_2fa_code(self, flask_app):
+        def generate_2fa_code(self, flask_app, test_mode=False):
                 """This function generates a six digit authentication code for the user,
                     uploads the code into the SQL 2FA Email table,
                     and sends the email to the user containing the code.
@@ -230,8 +230,8 @@ class UserAccountManagement(sdw):
 
                 cursor = self.conn.cursor()
                 cursor.execute(query, code, self.userId)
-                mailer = MFAMailer(self.userId, flask_app)
-                mailer.sendCode(code)
+                mailer = MFAMailer(self.userId, flask_app, test_mode)
+                mailer.send_code(code)
                 mailer.conn.close()
                 return code
         
@@ -267,7 +267,7 @@ class UserAccountManagement(sdw):
             else:
                 raise AssertionError("Got invalid DB status code " + str(status) + " while authenticating verification code.")
             
-            
+
 
        
         
