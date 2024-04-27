@@ -7,14 +7,42 @@ import "./styles/ChatPage.css";
 const ChatPage = () => {
   const backendURL = "http://172.208.66.211:5000";
   const [recentChats, setRecentChats] = useState([]);
-  const userId = "1"; // Replace with the actual user ID
   const [currentChat, setCurrentChat] = useState(null); // State to track current chat
+
+  let decodedCookie = decodeURIComponent(document.cookie);
+  console.log("Read cookie: ", decodedCookie);
+
+  let temp_uid = "";
+
+  let ca = decodedCookie.split(';');
+  var key = "user_id";
+  for (let i = 0; i <ca.length; i++) {
+    let c = ca[i];
+    c = c.split("=");
+    if (c[0] === key) {
+      temp_uid = c[1];
+      break;
+    }
+    else {
+      temp_uid = c[1];
+    }
+  }
+  
+  if (temp_uid === "") {
+    throw new Error("Unable to find user id cookie.");
+  }
+  else {
+    console.log(temp_uid);
+  }
+
+  const [userId, setUserId] = useState(temp_uid);
+
 
   const handleChatSelect = (chat) => {
     setCurrentChat(chat); // Update current chat when a chat is selected
   };
 
-  /*
+  
   const handleNewChat = async (user_input) => {
     try {
 
@@ -52,7 +80,8 @@ const ChatPage = () => {
       console.error("Error generating conversation title:", error.message);
     }
   };
-*/
+  
+
   //Make the history sidebar resizeable
   const [width, setWidth] = useState(300);
   const [mouseDown, setMouseDown] = useState(false);

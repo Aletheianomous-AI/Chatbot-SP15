@@ -10,6 +10,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
+  //const [userId, setUserId] = useState(-1);
   const location = useLocation();
   const handleLogin = () => {
     // Add your login logic here
@@ -20,6 +21,7 @@ function App() {
   const handleLogout = () => {
     // Add your logout logic here
     // For simplicity, let's toggle the login state
+    console.log("Handling logout.");
     setLoggedIn(false);
   };
 

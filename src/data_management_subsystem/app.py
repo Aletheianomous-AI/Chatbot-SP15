@@ -27,7 +27,7 @@ def create_user():
         username = json_data["username"]
         email = json_data["email"]
         password = json_data["password"]
-        dob = dt.strptime(json_data["dob"], "%m/%d/%Y")
+        dob = dt.strptime(json_data["dob"], "%Y-%m-%d")
         if "share_conv_for_training" in json_data.keys():
             share_conv_for_training = json_data["share_conv_for_training"]
         else:
@@ -47,6 +47,7 @@ def generate_verification_code(user_id):
     try:
         json_data = request.get_json(silent=True)
         test_mode = False
+        print(user_id)
         if 'test_mode' in json_data.keys():
             test_mode = json_data['test_mode']
         uam_object = uam(int(user_id))
@@ -62,6 +63,7 @@ def generate_verification_code(user_id):
 def authenticate_verification_code(user_id):
     try:
         json_data = request.get_json(silent=False)
+        print(json_data)
         code = int(json_data['code'])
         uam_object = uam(int(user_id))
         verif_code_correct = uam_object.verify_2fa_code(code)
