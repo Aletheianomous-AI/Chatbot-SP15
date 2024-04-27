@@ -25,7 +25,7 @@ class UserAccountManagement(sdw):
                         use_light_theme_bit = 1
                 else:
                         use_light_theme_bit = 0
-                cursor.execute(query, use_light_theme_bit, self.userID)
+                cursor.execute(query, use_light_theme_bit, self.userId)
 
         def set_share_conv_for_training(self, share_conv_for_training: bool):
                 """This function sets the 'Share_Conversation_For_Training' attribute in the 
@@ -42,7 +42,7 @@ class UserAccountManagement(sdw):
                         share_conv_for_tr_bit = 1
                 else:
                        share_conv_for_tr_bit = 0
-                cursor.execute(query, share_conv_for_tr_bit, self.userID)
+                cursor.execute(query, share_conv_for_tr_bit, self.userId)
 
         def get_user_info(self):
                 """This function returns user info"""
@@ -53,7 +53,7 @@ class UserAccountManagement(sdw):
                         WHERE UserID = ?;
                 """
                 cursor = self.conn.cursor()
-                cursor.execute(query, self.userID)
+                cursor.execute(query, self.userId)
                 results = cursor.fetchall()
                 results = results[0]
                 return {'userName': results[0], 'email': results[1], 'dob': results[2]}
@@ -67,7 +67,7 @@ class UserAccountManagement(sdw):
                         WHERE UserID = ?
                 """
                 cursor = self.conn.cursor()
-                cursor.exeucte(query, new_username, self.userID)
+                cursor.exeucte(query, new_username, self.userId)
                 
                 
         def set_email(self, new_email: str):
@@ -80,7 +80,7 @@ class UserAccountManagement(sdw):
                 """
 
                 cursor = self.conn.cursor()
-                cursor.execute(query, new_email, self.userID)
+                cursor.execute(query, new_email, self.userId)
 
         def set_DOB(self, new_dob: dt):
 
@@ -98,7 +98,7 @@ class UserAccountManagement(sdw):
                 """
 
                 cursor = self.conn.cursor()
-                cursor.execute(query, self.userID, new_dob.strftime("%Y-%m-%d"))
+                cursor.execute(query, self.userId, new_dob.strftime("%Y-%m-%d"))
 
         def update_passwrd(self, old_pass: str, new_pass: str):
                 query = """
@@ -124,7 +124,7 @@ class UserAccountManagement(sdw):
                 """
 
                 cursor = self.conn.cursor()
-                cursor.execute(query, self.userID, old_pass, new_pass)
+                cursor.execute(query, self.userId, old_pass, new_pass)
                 result = cursor.fetchall()
                 result = [0][0]
                 if result == 1:
@@ -175,7 +175,7 @@ class UserAccountManagement(sdw):
                 results = cursor.fetchall()
                 results = results[0][0]
                 if results > 0:
-                        self.userID = results
+                        self.userId = results
                 else:
                         raise AssertionError("'" + email + "' has been taken. Please use a different address.")
                 
@@ -203,8 +203,8 @@ class UserAccountManagement(sdw):
                 """
 
                 cursor = self.conn.cursor()
-                cursor.execute(query, code, self.userID)
-                mailer = MFAMailer(self.userID, flask_app)
+                cursor.execute(query, code, self.userId)
+                mailer = MFAMailer(self.userId, flask_app)
                 mailer.sendCode(code)
                 mailer.conn.close()
        
@@ -214,7 +214,7 @@ class UserAccountManagement(sdw):
                 """This function deletes the user's account."""
 
                 
-                chat_data = cd(self.userID)
+                chat_data = cd(self.userId)
                 chat_data.delete_entire_chat()
                 chat_data.conn.close()
                 query = """
@@ -228,7 +228,7 @@ class UserAccountManagement(sdw):
                 """
 
                 cursor = self.conn.cursor()
-                cursor.execute(query, self.userID)
+                cursor.execute(query, self.userId)
                 
         
         def user_exists(conn, userId):
