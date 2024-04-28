@@ -36,7 +36,7 @@ function MainNavBar() {
           </li>
           <li>
             {/* TODO: Insert the static website for final report here */}
-            <a href="">Our Team</a>
+            <a href="https://aletheianomous-ai.github.io/">Our Team</a>
           </li>
         </ul>
       )}
