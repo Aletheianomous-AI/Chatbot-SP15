@@ -1,0 +1,23 @@
+.container {
+  background-color: #272e3f;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.recent-column {
+  width: 15%;
+  box-sizing: border-box;
+  background-color: #3c4352;
+  overflow-y: auto;
+  cursor: col-resize;
+}
+
+.main-chat-window {
+  box-sizing: border-box;
+  flex: 1;
+  overflow-y: auto;
+}
