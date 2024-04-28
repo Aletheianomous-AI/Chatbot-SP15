@@ -1,0 +1,35 @@
+CHATDATA
+create_new_conversation: OK
+rename_conversation_title: OK
+upload_citations: OK
+get_citations_by_chat_id: UNUSED
+delete_entire_chat: OK
+delete_chat_by_period: OK
+get_chat_by_cid: OK
+log_chat: OK
+get_chat_titles: OK
+return_chat_history: OK
+
+UserAccountManagement
+update_light_theme: UNUSED
+set_share_conv_for_training: UNUSED
+get_user_info: UNUSED
+get_share_conv_state: NOT IMPLEMENTED
+get_light_theme: NOT IMPLEMENTED
+set_user_name: UNUSED
+set_email: UNUSED
+set_DOB: UNUSED
+update_passwrd: UNUSED
+!! create_user: OK
+!! login_user: OK
+!! generate_2fa_code: OK
+verify_2fa_code: OK
+delete_user: OK
+user_exists: OK
+
+MFAMailer
+send_code: OK
+
+SQLDatabaseWrapper: OK
+
+

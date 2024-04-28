@@ -1,0 +1,14 @@
+REST API TEST
+create_user(): OK
+generate_verification_code(): OK
+authenticate_verification_code(): OK
+login_user(): OK
+delete_user(): OK
+post_chat(): OK
+generate_response(): OK
+get_chat_titles(): OK
+generate_conv(): OK
+create_new_conversation():OK
+delete_chat_by_period(): BYPASS
+delete_entire_chat(): BYPASS
+get_chat(): OK
