@@ -111,7 +111,7 @@ const ChatWindow = ({ backendURL, userId, currentChat }) => {
           headers: {
             "Content-Type": "application/json",
           },
-		body: JSON.stringify({ chat_data: userMessage, debug_mode: true}),
+          body: JSON.stringify({ chat_data: userMessage }),
         }
       );
 
