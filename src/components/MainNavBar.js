@@ -19,21 +19,11 @@ function MainNavBar() {
       <h1 className="brand-name-button" onClick={handleH1Click}>
         ALETHEIANOMOUS AI
       </h1>
-
-      {location.pathname === "/chatpage" ? (
-        <UserNavBar />
-      ) : (
         <ul>
           <li>
-            <Link to="/login" className="">
-              Login
+            <Link to="/contact" className="">
+              Contact Us
             </Link>
-          </li>
-          <li>
-            <Link to="/singup" className="">
-              Signup
-            </Link>
-          </li>
           <li>
             {/* TODO: Insert the static website for final report here */}
             <a href="https://aletheianomous-ai.github.io/">Our Team</a>
